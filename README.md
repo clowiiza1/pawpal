@@ -1,5 +1,5 @@
 # Getting Started with Create React App
-//To show commit
+//To show commit, to show pull
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
