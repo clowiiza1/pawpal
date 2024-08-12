@@ -1,14 +1,14 @@
 import logo from './logo.jpg';
 import './App.css';
+import BrowseAnimals from './BrowseAnimals'; 
 
 function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Hey there.
-        </p>
+        <div>
+            <BrowseAnimals />
+        </div>
       </header>
     </div>
   );

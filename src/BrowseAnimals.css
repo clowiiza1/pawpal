@@ -1,0 +1,43 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #F4E8D8; /* Light beige background */
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    text-align: center;
+}
+
+h1 {
+    color: #D49C7D; /* Muted orange color */
+    font-size: 36px;
+    margin-bottom: 10px;
+}
+
+p {
+    color: #6A503F; /* Dark brown color */
+    font-size: 18px;
+}
+
+.card-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.browse-more {
+    background-color: #D49C7D; /* Muted orange color */
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 20px;
+}
+
+.browse-more:hover {
+    background-color: #BF855F; /* Darker orange on hover */
+}

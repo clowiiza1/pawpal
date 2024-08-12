@@ -1,0 +1,30 @@
+.card {
+    background-color: #F8F1E7; /* Slightly darker beige for the card */
+    border-radius: 15px;
+    overflow: hidden;
+    width: 200px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+}
+
+.card-content {
+    padding: 15px;
+}
+
+.name {
+    color: #6A503F; /* Dark brown color */
+    font-size: 20px;
+    margin: 0;
+    font-weight: bold;
+}
+
+.description {
+    color: #A67C5C; /* Lighter brown */
+    font-size: 14px;
+    margin-top: 10px;
+}
