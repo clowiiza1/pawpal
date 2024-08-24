@@ -52,3 +52,11 @@
     opacity: 1;
   }
 }
+
+input:-webkit-autofill:active {
+  background-color: #FFF2D7 !important;
+  color: #6C4E31 !important;
+  -webkit-box-shadow: 0 0 0px 1000px #FFFFFF inset !important;
+  box-shadow: 0 0 0px 1000px #FFFFFF inset !important;
+  transition: background-color 5000s ease-in-out 0s;
+}

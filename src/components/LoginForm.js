@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import '../App.css';
+
 
 const LoginForm = () => {
   const [formData, setFormData] = useState({
@@ -32,16 +34,17 @@ const LoginForm = () => {
                 Email address
               </label>
               <div className="mt-1 rounded-md shadow-pr bg-pr">
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                  autoFocus
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-pr focus:border-pr transition duration-150 ease-in-out sm:text-sm sm:leading-5"
-                />
+              <input
+                id="email"
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                autoFocus
+                className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-pr focus:border-pr transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+              />
+
               </div>
             </div>
 
@@ -57,8 +60,8 @@ const LoginForm = () => {
                   value={formData.password}
                   onChange={handleChange}
                   required
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-pr focus:border-pr transition duration-150 ease-in-out sm:text-sm sm:leading-5"
-                />
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-pr focus:border-pr transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                  />
               </div>
             </div>
 
