@@ -9,12 +9,17 @@ export default {
   theme: {
     extend: {
       colors: {
-      pr: '#F2F1EB', // Replace with your custom color code
+      pr: '#FFF2D7', // Replace with your custom color code
       sc: '#6C4E31',
+      st: '#D8AE7E',
+      br: '#6b4e30'
       },
       fontFamily: {
         poppins: ['Poppins', 'sans-serif'],
         quicksand: ['Quicksand', 'sans-serif'],
+      },
+      minHeight: {
+        '3/4': '75vh',
       }
    },
   },

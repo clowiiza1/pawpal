@@ -3,7 +3,7 @@ import SignUpForm from '../components/SignUpForm';
 
 const SignUp = () => {
   return (
-    <div className="p-8 flex justify-center items-center">
+    <div className="flex justify-center items-start p-6">
       <SignUpForm />
     </div>
   );

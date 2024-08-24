@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 const LoginForm = () => {
   const [formData, setFormData] = useState({
     email: '',
-    password: ''
+    password: '',
   });
 
   const handleChange = (e) => {
@@ -12,35 +13,81 @@ const LoginForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle form submission logic, like calling an API to log the user in.
+    // Handle form submission logic
   };
 
   return (
-    <div className="flex justify-center items-center bg-gray-100">
-      <form onSubmit={handleSubmit} className="bg-white p-6 rounded shadow-md w-96">
-        <h2 className="text-2xl font-bold mb-4">Login</h2>
-        <input
-          type="email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-          placeholder="Email"
-          className="w-full p-2 mb-3 border rounded"
-          required
-        />
-        <input
-          type="password"
-          name="password"
-          value={formData.password}
-          onChange={handleChange}
-          placeholder="Password"
-          className="w-full p-2 mb-4 border rounded"
-          required
-        />
-        <button type="submit" className="w-full p-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-          Login
-        </button>
-      </form>
+    <div className="flex flex-col  bg-pr sm:px-6 lg:px-8">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md">
+        <h2 className=" text-3xl font-extrabold text-center text-sc leading-9">
+          Sign in to your account
+        </h2>
+      </div>
+
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="px-4 py-8 bg-br shadow sm:rounded-lg sm:px-10">
+          <form onSubmit={handleSubmit}>
+            <div>
+              <label htmlFor="email" className="block text-pr font-medium text-gray-700 leading-5">
+                Email address
+              </label>
+              <div className="mt-1 rounded-md shadow-pr bg-pr">
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                  autoFocus
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-pr focus:border-pr transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                />
+              </div>
+            </div>
+
+            <div className="mt-6">
+              <label htmlFor="password" className="block text-pr font-medium text-gray-700 leading-5">
+                Password
+              </label>
+              <div className="mt-1 rounded-md shadow-pr">
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:shadow-outline-pr focus:border-pr transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                />
+              </div>
+            </div>
+
+            <div className="mt-6">
+              <span className="block w-full rounded-md shadow-pr">
+                <button
+                  type="submit"
+                  className="flex justify-center w-full px-4 py-2 text-pr font-medium text-pr bg-st border border-transparent rounded-md hover:opacity-70 focus:outline-none focus:border-pr focus:shadow-outline-pr active:bg-pr transition duration-150 ease-in-out"
+                >
+                  Sign in
+                </button>
+              </span>
+            </div>
+            <div className="flex items-center justify-center mt-6"> 
+              <div className="text-sm leading-5">
+                <Link to="/forgot-password" className="font-medium text-pr hover:opacity-70 focus:outline-none focus:underline transition ease-in-out duration-150">
+                  Forgot your password?
+                </Link>
+              </div>
+            </div>
+            <p className="mt-2 text-sm text-center text-gray-600 leading-5 max-w p-2">
+          <Link to="/signup" className="font-medium text-pr hover:opacity-70 focus:outline-none focus:underline transition ease-in-out duration-150">
+                  Don't have an account? Let's create one!
+           </Link>
+        </p>
+          </form>
+        </div>
+      </div>
+      
     </div>
   );
 };
