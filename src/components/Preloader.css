@@ -1,0 +1,19 @@
+//Preloader styles
+.custom-size {
+    width: 1.00rem;
+    height: 1.00rem;
+  }
+.fade-out {
+    animation: fadeOut 1.0s ease-out forwards;
+  }
+  
+  @keyframes fadeOut {
+    0% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      visibility: hidden;
+    }
+  }
+  
