@@ -1,4 +1,3 @@
-import React, { useEffect, useState } from 'react';
 import AnimalTable from '../components/AnimalTable';
 
 const AdoptCat = () => {
