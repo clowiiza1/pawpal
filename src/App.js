@@ -30,7 +30,7 @@ function App() {
       ) : (
         <div className="fade-i h-screen bg-pr">
           <Header />
-          <main className="container mx-auto min-h-3/4">
+          <main className="container mx-auto min-h-4/5">
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/adoptacat" element={<AdoptCat />} /> {/* New route for Adopt a Cat */}

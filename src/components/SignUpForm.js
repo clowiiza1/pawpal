@@ -21,7 +21,7 @@ const SignUp = () => {
   return (
     <div className="flex flex-col justify-center  bg-pr sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h2 className=" text-3xl font-extrabold text-center text-sc leading-9 pt-4">
+        <h2 className=" text-3xl font-extrabold text-center text-sc leading-9 pt-1">
           Create a new account
         </h2>
       </div>
