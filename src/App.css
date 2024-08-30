@@ -60,3 +60,24 @@ input:-webkit-autofill:active {
   box-shadow: 0 0 0px 1000px #FFFFFF inset !important;
   transition: background-color 5000s ease-in-out 0s;
 }
+
+.success-message {
+  color: #28a745;
+  font-weight: bold;
+  margin-top: 20px;
+  text-align: center;
+  display: none;
+}
+
+.success-message.show {
+  display: block;
+  animation: fadeIn 1s ease-in-out;
+}
+
+.icon-bottom {
+  position: absolute;
+  bottom: 20px; /* Adjust as needed */
+  left: 20px;   /* Adjust as needed */
+  height: 96px;
+  width: 96px;
+}

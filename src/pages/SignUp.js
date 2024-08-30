@@ -4,9 +4,10 @@ import petsIcon from '../pages/signupformicon.png';
 
 const SignUp = () => {
   return (
-    <div className="flex justify-center items-start p-4">
+    <div className="flex justify-center items-start p-4 relative min-h-screen">
+      <img src={petsIcon} alt="Pets Icon" className="absolute bottom-0 right-0  m-4 h-24 w-24" />
       <SignUpForm />
-      <img src={petsIcon} alt="Pets Icon" className="absolute bottom-2 left-4  m-4 h-24 w-24" />
+    
 
     </div>
   );

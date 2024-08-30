@@ -28,9 +28,9 @@ function App() {
       {loading ? (
         <Preloader />
       ) : (
-        <div className="fade-i h-screen bg-pr">
+        <div className="fade-i min-h-screen bg-pr">
           <Header />
-          <main className="container mx-auto min-h-4/5">
+          <main className="container justify-center mx-auto min-h-4/5">
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/adoptacat" element={<AdoptCat />} /> {/* New route for Adopt a Cat */}

@@ -1,27 +1,52 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { login } from '../apis/api'; // Import the login function
 import '../App.css';
-
 
 const LoginForm = () => {
   const [formData, setFormData] = useState({
-    email: '',
+    username: '',
     password: '',
   });
+
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false); // New state for success message
+  const navigate = useNavigate(); // Use navigate to redirect after login
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission logic
+    try {
+      const response = await login({
+        username: formData.username,
+        password: formData.password,
+      });
+
+      // Store the JWT token
+      localStorage.setItem('token', response.data.accessToken);
+
+      // Show success message
+      setSuccess(true);
+      setError(null);
+
+      // Redirect to the homepage or dashboard after a short delay
+      setTimeout(() => {
+        navigate('/'); // Adjust the path based on your app
+      }, 2000);
+    } catch (error) {
+      console.error('Login failed:', error.response?.data || error.message);
+      setError('Login failed. Please check your credentials.');
+      setSuccess(false);
+    }
   };
 
   return (
-    <div className="flex flex-col  bg-pr sm:px-6 lg:px-8">
+    <div className="flex flex-col bg-pr sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h2 className=" text-3xl font-extrabold text-center text-sc leading-9">
+        <h2 className="text-3xl font-extrabold text-center text-sc leading-9">
           Sign in to your account
         </h2>
       </div>
@@ -29,22 +54,22 @@ const LoginForm = () => {
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="px-4 py-8 bg-br shadow sm:rounded-lg sm:px-10">
           <form onSubmit={handleSubmit}>
+            {/* Your form fields here */}
             <div>
-              <label htmlFor="email" className="block text-pr font-medium text-gray-700 leading-5">
-                Email address
+              <label htmlFor="username" className="block text-pr font-medium text-gray-700 leading-5">
+                Username
               </label>
               <div className="mt-1 rounded-md shadow-pr bg-pr">
-              <input
-                id="email"
-                name="email"
-                type="email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-                autoFocus
-                className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-pr focus:border-pr transition duration-150 ease-in-out sm:text-sm sm:leading-5"
-              />
-
+                <input
+                  id="username"
+                  name="username"
+                  type="text"
+                  value={formData.username}
+                  onChange={handleChange}
+                  required
+                  autoFocus
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-pr focus:border-pr transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                />
               </div>
             </div>
 
@@ -61,9 +86,12 @@ const LoginForm = () => {
                   onChange={handleChange}
                   required
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-pr focus:border-pr transition duration-150 ease-in-out sm:text-sm sm:leading-5"
-                  />
+                />
               </div>
             </div>
+
+            {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+            {success && <p className="text-green-500 text-sm mt-2">Login successful! Redirecting...</p>}
 
             <div className="mt-6">
               <span className="block w-full rounded-md shadow-pr">
@@ -75,7 +103,7 @@ const LoginForm = () => {
                 </button>
               </span>
             </div>
-            <div className="flex items-center justify-center mt-6"> 
+            <div className="flex items-center justify-center mt-6">
               <div className="text-sm leading-5">
                 <Link to="/forgot-password" className="font-medium text-pr hover:opacity-70 focus:outline-none focus:underline transition ease-in-out duration-150">
                   Forgot your password?
@@ -83,14 +111,13 @@ const LoginForm = () => {
               </div>
             </div>
             <p className="mt-2 text-sm text-center text-gray-600 leading-5 max-w p-2">
-          <Link to="/signup" className="font-medium text-pr hover:opacity-70 focus:outline-none focus:underline transition ease-in-out duration-150">
-                  Don't have an account? Let's create one!
-           </Link>
-        </p>
+              <Link to="/signup" className="font-medium text-pr hover:opacity-70 focus:outline-none focus:underline transition ease-in-out duration-150">
+                Don't have an account? Let's create one!
+              </Link>
+            </p>
           </form>
         </div>
       </div>
-      
     </div>
   );
 };
