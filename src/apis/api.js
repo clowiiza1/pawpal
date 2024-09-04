@@ -15,6 +15,7 @@ const api = axios.create({
 api.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem('token'); // Retrieve the token from localStorage (or sessionStorage)
+        console.log('Interceptor token:', token); 
         if (token) {
             config.headers['Authorization'] = `Bearer ${token}`;
         }
@@ -31,6 +32,7 @@ export const login = async (credentials) => {
     if (response.data.token) {
         // Store the JWT token after successful login
         localStorage.setItem('token', response.data.token);
+        console.log('Token stored:', localStorage.getItem('token'));
     }
     return response;
 };

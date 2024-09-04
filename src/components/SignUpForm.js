@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { register, login } from '../apis/api'; // Import the register and login functions
 
-const SignUp = () => {
+const SignUpForm = ({ setIsLoggedIn }) => {  // Accept the setIsLoggedIn prop
   const [formData, setFormData] = useState({
     username: '',
     password: '',
@@ -24,6 +24,7 @@ const SignUp = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // Register the user
       await register({
         username: formData.username,
         password: formData.password,
@@ -40,17 +41,21 @@ const SignUp = () => {
         password: formData.password,
       });
 
-      // Store the JWT token
-      localStorage.setItem('token', loginResponse.data.accessToken);
+      // Store the JWT token and the username
+      localStorage.setItem('token', loginResponse.data.token); // Ensure the correct token key is used
+      localStorage.setItem('username', formData.username);
 
       console.log('Registration and login successful');
       setSuccess(true);
       setError(null);
 
+      // Dynamically update the login status
+      setIsLoggedIn(true);  // Use the setIsLoggedIn prop to update the global login state
+
       // Redirect to the homepage or dashboard after a short delay
       setTimeout(() => {
         navigate('/'); // Adjust the path based on your app
-      }, 2000);
+      }, 1000);
     } catch (error) {
       console.error('Registration failed:', error.response?.data || error.message);
       setError('Registration failed. Please try again.');
@@ -59,13 +64,14 @@ const SignUp = () => {
   };
 
   return (
-    <div className="flex flex-col justify-center  bg-pr sm:px-6 lg:px-8">
+    <div className="flex flex-col justify-center bg-pr sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h2 className=" text-3xl font-extrabold text-center text-sc leading-9 pt-1">
+        <h2 className="text-3xl font-extrabold text-center text-sc leading-9 pt-1">
           Create a new account
         </h2>
       </div>
 
+     
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="px-4 py-8 bg-br shadow sm:rounded-lg sm:px-10">
           <form onSubmit={handleSubmit}>
@@ -188,7 +194,6 @@ const SignUp = () => {
                 />
               </div>
             </div>
-
             {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
             {success && <p className="text-green-500 text-sm mt-2">Registration successful! Redirecting...</p>}
 
@@ -217,4 +222,4 @@ const SignUp = () => {
   );
 };
 
-export default SignUp;
+export default SignUpForm;

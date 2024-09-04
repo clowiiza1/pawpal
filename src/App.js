@@ -10,9 +10,12 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import Preloader from './components/Preloader';
 import './App.css'; // Ensure this path is correct
+import Profile from './pages/Profile'; // Import Profile
 
 function App() {
+  // Define loading state to manage preloader
   const [loading, setLoading] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('token'));
 
   useEffect(() => {
     // Simulate a loading delay (e.g., fetching data)
@@ -20,7 +23,7 @@ function App() {
       setLoading(false);
     }, 1000); // Adjust the delay time to match the preloader fade-out duration
 
-    return () => clearTimeout(timer);
+    return () => clearTimeout(timer); // Cleanup the timer
   }, []);
 
   return (
@@ -29,15 +32,16 @@ function App() {
         <Preloader />
       ) : (
         <div className="fade-i min-h-screen bg-pr">
-          <Header />
+          <Header isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
           <main className="container justify-center mx-auto min-h-4/5">
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/adoptacat" element={<AdoptCat />} /> {/* New route for Adopt a Cat */}
-              <Route path="/adoptadog" element={<AdoptDog />} /> {/* New route for Adopt a Dog */}
+              <Route path="/adoptacat" element={<AdoptCat />} />
+              <Route path="/adoptadog" element={<AdoptDog />} />
               <Route path="/volunteer" element={<Volunteer />} />
-              <Route path="/signup" element={<SignUp />} />
-              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<SignUp setIsLoggedIn={setIsLoggedIn} />} />
+              <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
+              <Route path="/profile" element={<Profile />} /> {/* Add the Profile route */}
             </Routes>
           </main>
           <Footer />

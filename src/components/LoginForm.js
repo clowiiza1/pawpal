@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { login } from '../apis/api'; // Import the login function
 import '../App.css';
 
-const LoginForm = () => {
+const LoginForm = ({ setIsLoggedIn }) => { // Added setIsLoggedIn prop
   const [formData, setFormData] = useState({
     username: '',
     password: '',
@@ -24,24 +24,43 @@ const LoginForm = () => {
         username: formData.username,
         password: formData.password,
       });
-
-      // Store the JWT token
-      localStorage.setItem('token', response.data.accessToken);
-
-      // Show success message
-      setSuccess(true);
-      setError(null);
-
-      // Redirect to the homepage or dashboard after a short delay
-      setTimeout(() => {
-        navigate('/'); // Adjust the path based on your app
-      }, 2000);
+  
+      // Log the full response to check the structure
+      console.log("Login response:", response);
+      console.log('Login response data:', response.data);
+  
+      // Log the token field to verify it is correct
+      const token = response.data.accessToken;
+      console.log("Token:", token);
+      
+  
+      if (token) {
+        // Store the JWT token and the username
+        localStorage.setItem('token', token);
+        localStorage.setItem('username', formData.username);
+  
+        // Show success message
+        setSuccess(true);
+        setError(null);
+  
+        // Update the login status
+        setIsLoggedIn(true);
+  
+        // Redirect to the homepage or dashboard after a short delay
+        setTimeout(() => {
+          navigate('/');
+        }, 1000);
+      } else {
+        throw new Error('Token not found in response');
+      }
+  
     } catch (error) {
       console.error('Login failed:', error.response?.data || error.message);
       setError('Login failed. Please check your credentials.');
       setSuccess(false);
     }
   };
+  
 
   return (
     <div className="flex flex-col bg-pr sm:px-6 lg:px-8">
@@ -54,7 +73,6 @@ const LoginForm = () => {
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="px-4 py-8 bg-br shadow sm:rounded-lg sm:px-10">
           <form onSubmit={handleSubmit}>
-            {/* Your form fields here */}
             <div>
               <label htmlFor="username" className="block text-pr font-medium text-gray-700 leading-5">
                 Username

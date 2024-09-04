@@ -9,7 +9,7 @@ export default {
   theme: {
     extend: {
       colors: {
-      pr: '#FFF2D7', // Replace with your custom color code
+      pr: '#FFF6EA', // Replace with your custom color code
       sc: '#6C4E31',
       st: '#D8AE7E',
       br: '#6b4e30'
