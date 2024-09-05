@@ -13,17 +13,43 @@ import './App.css'; // Ensure this path is correct
 import Profile from './pages/Profile'; // Import Profile
 
 function App() {
-  // Define loading state to manage preloader
   const [loading, setLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('token'));
 
   useEffect(() => {
-    // Simulate a loading delay (e.g., fetching data)
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 1000); // Adjust the delay time to match the preloader fade-out duration
+    // Function to check if all images are loaded
+    const loadImages = (imageUrls) => {
+      return Promise.all(
+        imageUrls.map((url) => {
+          return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.src = url;
+            img.onload = () => resolve(url);
+            img.onerror = () => reject(url);
+          });
+        })
+      );
+    };
 
-    return () => clearTimeout(timer); // Cleanup the timer
+    // List of image URLs to preload
+    const imageUrls = [
+      './pages/header1.jpg',
+      './pages/header2.jpg',
+      './pages/header4/jpg'
+      // Add other image URLs here
+    ];
+
+    // Load images and hide preloader when done
+    loadImages(imageUrls)
+      .then(() => {
+        // Set a minimum time for the preloader to be visible
+        setTimeout(() => setLoading(false), 1500); // Adjust the timeout duration as needed
+      })
+      .catch((error) => {
+        console.error('Error loading image:', error);
+        setTimeout(() => setLoading(false), 1000); // Ensure preloader hides even if there is an error
+      });
+
   }, []);
 
   return (

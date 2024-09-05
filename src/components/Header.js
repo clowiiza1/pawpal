@@ -36,13 +36,13 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
           <span className="text-2xl font-bold">PawPal</span>
         </Link>
         <nav className="flex items-center space-x-6">
-          <Link to="/adoptadog" className="px-3 text-sc hover:text-st">
+          <Link to="/adoptadog" className="px-2 text-sc hover:text-st">
             Adopt a Dog
           </Link>
-          <Link to="/adoptacat" className="px-3 text-sc hover:text-st">
+          <Link to="/adoptacat" className="px-2 text-sc hover:text-st">
             Adopt a Cat
           </Link>
-          <Link to="/volunteer" className="px-3 text-sc hover:text-st">
+          <Link to="/volunteer" className="px-2 text-sc hover:text-st">
             Volunteer
           </Link>
 
@@ -51,7 +51,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
             <li className="relative group list-none px-3">
               <img src={userIcon} alt="User Icon" className="h-6 w-6 text-brown-500 hover:text-brown-700 cursor-pointer" />
               {/* Hover dropdown */}
-              <div className="absolute right-0 mt-2 w-48 bg-sc rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <div className="absolute z-50 right-0 mt-2 w-48 bg-sc rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <p className="block px-4 py-2 text-st">Hello, {username}</p>  {/* Update the username */}
                 <Link
                   to="/profile"

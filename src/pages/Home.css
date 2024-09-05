@@ -1,0 +1,82 @@
+
+.pens_link {
+  --pens-link-color: #ffffff;
+  --pens-link-bgColor: #3b82f6;
+  position: fixed;
+  bottom: 56px;
+  right: 56px;
+  margin: auto;
+  display: inline-flex;
+  font-size: 2rem;
+  text-decoration: none;
+  border-radius: 500px;
+  background-color: var(--pens-link-bgColor);
+  color: var(--pens-link-color);
+  border: 4px solid #ffffff;
+  height: 56px;
+  width: 56px;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  animation: animate 1500ms ease infinite;
+  z-index: 999999;
+  &:hover {
+    text-decoration: none;
+    color: var(--pens-link-color);
+  }
+  @keyframes animate {
+    0%,
+    100% {
+      transform: translatey(-10%);
+    }
+    50% {
+      transform: translatey(10%);
+    }
+  }
+}
+.cards-container {
+  perspective: 1000px;
+  position: relative;
+  right: -50px; /* Move the entire card group slightly to the right */
+}
+
+.card {
+  position: absolute;
+  top: 15%;
+  left: 50%; /* Start all images from the center */
+  transform-origin: center;
+  transition: transform 1s ease-in-out;
+  width: 24rem !important;  /* Equivalent to Tailwind w-96 */
+  height: 24rem !important; /* Equivalent to Tailwind h-96 */
+}
+
+/* Initial state: Cards are stacked on top of each other */
+.cards-container .card {
+  transform: translate3d(-60%, -60px, 0) scale(1) rotate(0);
+}
+
+/* When cards-open is applied, the cards move to their final positions */
+
+/* Left card moves dramatically to the left and slightly rotates */
+.cards-open .left-card {
+  transform: translate3d(-350px, -22px, 0) rotateZ(-13deg); /* Open more to the left */
+}
+
+/* Center card stays mostly in the center */
+.cards-open .center-card {
+  transform: translate3d(-60%, -60px, 0) rotateZ(0deg); /* Center card stays at the top */
+}
+
+/* Right card moves dramatically to the right and slightly rotates */
+.cards-open .right-card {
+  transform: translate3d(-105px, -20px, 0) rotateZ(13deg); /* Open more to the right */
+}
+.custom-size {
+  height: 24rem !important;
+  width: 24rem !important;
+}
+
+.cards-container .card img {
+  object-fit: cover;
+  border-radius: 0.5rem !important;
+}
