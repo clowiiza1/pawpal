@@ -3,6 +3,9 @@ import header1 from './header1.jpg';
 import header2 from './header2.jpg';
 import header from './header4.jpg';
 import './Home.css'; 
+import IconSection from '../components/IconSection'; 
+import AboutUsSection from '../components/AboutUs'; 
+import SuccessStories from '../components/Success'; 
 
 const Home = () => {
   const [cardsOpen, setCardsOpen] = useState(false);
@@ -17,7 +20,7 @@ const Home = () => {
 
   return (
     <div className="page-wrap font-poppins">
-      <header className="page-header flex container mx-auto">
+      <header className="page-header flex mx-auto py-30 px-10">
         <div className="w-1/2 px-6">
           <div className="h-full space-y-10 justify-center flex flex-col px-6 pt-6">
             <div className="flex flex-col justify-center space-y-4">
@@ -28,12 +31,12 @@ const Home = () => {
                 Your new best friend is just a heartbeat away!
               </p>
             </div>
-            <button className="px-6 py-3 mr-auto font-large text-xl rounded-lg bg-st text-br hover:bg-sc hover:text-pr shadow-lg">
+            <button className="px-6 py-3 mr-auto font-large text-xl rounded-lg  bg-st text-pr shadow-lg hover:bg-sc transition duration-300">
               Explore Now
             </button>
           </div>
         </div>
-        <div className="w-1/2 py-20">
+        <div className="w-1/2">
           <div className={`flex justify-center relative cards-container ${cardsOpen ? 'cards-open' : ''}`}>
             <ul>
               <li className="absolute card left-card">
@@ -49,6 +52,10 @@ const Home = () => {
           </div>
         </div>
       </header>
+      <IconSection /> 
+      <AboutUsSection />
+      <SuccessStories />
+      
     </div>
   );
 };

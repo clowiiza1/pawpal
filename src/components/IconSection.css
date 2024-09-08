@@ -1,0 +1,34 @@
+.icon-section {
+  background-color: #FFF6EA; /* Replace with your custom color */
+  padding-top: 60rem;
+  padding-bottom: 60rem;
+}
+
+.icon-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 200px;
+}
+
+.icon-placeholder {
+  font-size: 5rem; /* Large size for the icon */
+  color: #6C4E31;  /* Replace with your custom color */
+  width: 100px;
+}
+
+.text-center {
+  color: #6C4E31;  /* Replace with your custom text color */
+}
+
+/* Hover Effect */
+.hover-effect:hover .icon-placeholder {
+  transform: scale(1.2); /* Make the icon larger on hover */
+  transition: transform 0.3s ease;
+}
+
+/* Icon animation */
+.icon-placeholder {
+  transition: transform 0.3s ease;
+}

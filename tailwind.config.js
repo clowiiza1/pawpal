@@ -21,6 +21,9 @@ export default {
       minHeight: {
         '3/4': '75vh',
         '4/5': '80vh',
+      },
+      spacing: {
+        '30': '7.8rem',  // Add '30' as 7.5rem (120px)
       }
    },
   },

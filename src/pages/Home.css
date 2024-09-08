@@ -37,7 +37,7 @@
 .cards-container {
   perspective: 1000px;
   position: relative;
-  right: -50px; /* Move the entire card group slightly to the right */
+  right: -30px; /* Move the entire card group slightly to the right */
 }
 
 .card {

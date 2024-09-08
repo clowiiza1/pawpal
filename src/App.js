@@ -57,9 +57,9 @@ function App() {
       {loading ? (
         <Preloader />
       ) : (
-        <div className="fade-i min-h-screen bg-pr">
+        <div className="fade-i min-h-screen bg-pr min-w-full">
           <Header isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
-          <main className="container justify-center mx-auto min-h-4/5">
+          <main className="justify-center  min-h-4/5">
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/adoptacat" element={<AdoptCat />} />
@@ -67,7 +67,7 @@ function App() {
               <Route path="/volunteer" element={<Volunteer />} />
               <Route path="/signup" element={<SignUp setIsLoggedIn={setIsLoggedIn} />} />
               <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
-              <Route path="/profile" element={<Profile />} /> {/* Add the Profile route */}
+              <Route path="/profile" element={<Profile />} />
             </Routes>
           </main>
           <Footer />
