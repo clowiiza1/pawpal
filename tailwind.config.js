@@ -12,7 +12,10 @@ export default {
       pr: '#FFF6EA', // Replace with your custom color code
       sc: '#6C4E31',
       st: '#D8AE7E',
-      br: '#6b4e30'
+      br: '#6b4e30',
+      c1: '#D8A05A', //soft pink
+      c2: '#DEC782', //dust rose
+      c3: '#E2B96D', //soft meauve
       },
       fontFamily: {
         poppins: ['Poppins', 'sans-serif'],

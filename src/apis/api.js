@@ -26,6 +26,16 @@ api.interceptors.request.use(
     }
 );
 
+export const getAnimals = async () => {
+    try {
+        const response = await api.get('/animals');
+        return response.data; // Assuming your API returns the animal list in response.data
+    } catch (error) {
+        console.error('Error fetching animals:', error);
+        return [];
+    }
+};
+
 // Login function
 export const login = async (credentials) => {
     const response = await api.post('/auth/login', credentials);
@@ -46,3 +56,4 @@ export const register = async (userData) => {
 export const getProtectedData = async () => {
     return await api.get('/protected-data');
 };
+
