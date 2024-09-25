@@ -11,6 +11,7 @@ import Footer from './components/Footer';
 import Preloader from './components/Preloader';
 import './App.css'; // Ensure this path is correct
 import Profile from './pages/Profile'; // Import Profile
+import AdoptBooking from './pages/AdoptBooking';
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -65,6 +66,7 @@ function App() {
               <Route path="/adoptacat" element={<AdoptCat />} />
               <Route path="/adoptadog" element={<AdoptDog />} />
               <Route path="/volunteer" element={<Volunteer />} />
+              <Route path="/adoptbooking" element={<AdoptBooking />} />
               <Route path="/signup" element={<SignUp setIsLoggedIn={setIsLoggedIn} />} />
               <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
               <Route path="/profile" element={<Profile />} />

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom'; 
 
 const Popup = ({ isOpen, onClose, dog }) => {
   if (!isOpen || !dog) return null; // Only render when the popup is open and dog is defined
@@ -41,7 +42,7 @@ const Popup = ({ isOpen, onClose, dog }) => {
               <li><strong>Gender:</strong> {gender}</li>
               <li><strong>Age:</strong> {age}</li>
               <li><strong>Breed:</strong> {breed}</li>
-              <li><strong>Weight:</strong> {weight}</li>
+              <li><strong>Weight (kg):</strong> {weight}</li>
             </ul>
 
             {/* Health Status Indicators */}
@@ -60,12 +61,11 @@ const Popup = ({ isOpen, onClose, dog }) => {
           </div>
 
           {/* Adoption Button */}
-          <button 
-            onClick={onClose} 
-            className="mt-6 bg-sc text-pr px-6 py-3 rounded-lg text-lg hover:bg-brown-700"
-          >
-            I Want To Adopt!
-          </button>
+          <Link to="/adoptbooking">
+              <button className="px-6 py-3 mr-auto font-large text-xl rounded-lg bg-sc text-pr shadow-lg hover:bg-st transition duration-300">
+                I Want To Adopt!
+              </button>
+            </Link>
         </div>
       </div>
     </div>

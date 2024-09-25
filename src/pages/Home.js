@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom'; // Import Link from react-router-dom
 import header1 from './header1.jpg';
 import header2 from './header2.jpg';
 import header from './header4.jpg';
@@ -24,16 +25,19 @@ const Home = () => {
         <div className="w-1/2 px-6">
           <div className="h-full space-y-10 justify-center flex flex-col px-6 pt-6">
             <div className="flex flex-col justify-center space-y-4">
-              <h1 className="text-4xl text-sc font-bold uppercase ">Find a Friend -</h1>
-              <h1 className="text-4xl text-sc font-bold uppercase ">Make a Difference</h1>
+              <h1 className="text-4xl text-sc font-bold uppercase">Find a Friend -</h1>
+              <h1 className="text-4xl text-sc font-bold uppercase">Make a Difference</h1>
               <p className="text-br pt-2">
                 Bringing adorable pets and loving families together, one wag and purr at a time.
                 Your new best friend is just a heartbeat away!
               </p>
             </div>
-            <button className="px-6 py-3 mr-auto font-large text-xl rounded-lg  bg-st text-pr shadow-lg hover:bg-sc transition duration-300">
-              Explore Now
-            </button>
+            {/* Wrap the button with Link for navigation */}
+            <Link to="/adoptadog">
+              <button className="px-6 py-3 mr-auto font-large text-xl rounded-lg bg-st text-pr shadow-lg hover:bg-sc transition duration-300">
+                Find your Friend
+              </button>
+            </Link>
           </div>
         </div>
         <div className="w-1/2">
@@ -55,7 +59,6 @@ const Home = () => {
       <IconSection /> 
       <AboutUsSection />
       <SuccessStories />
-      
     </div>
   );
 };

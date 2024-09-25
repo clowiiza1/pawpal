@@ -29,9 +29,15 @@ const AdoptDog = () => {
 
   useEffect(() => {
     const fetchAnimals = async () => {
+      // Fetch all animals from the API
       const fetchedAnimals = await getAnimals();
-      setAnimals(fetchedAnimals);
-      setFilteredAnimals(fetchedAnimals);
+      
+      // Filter out only the dogs
+      const dogAnimals = fetchedAnimals.filter(animal => animal.species.toLowerCase() === 'dog');
+
+      // Update state with the filtered list
+      setAnimals(dogAnimals);
+      setFilteredAnimals(dogAnimals);
     };
 
     fetchAnimals();
@@ -61,9 +67,9 @@ const AdoptDog = () => {
         <h1 className="text-4xl font-bold text-center text-sc mb-8">Loveable Puppies & Dogs</h1>
 
         {/* Dropdown Filter */}
-        <div className="w-full max-w-xl mx-auto mb-8">
+        <div className="w-full max-w-xl mx-auto mb-8 pb-4">
           <button
-            className="w-full p-3 rounded-xl border border-gray-300 shadow-md bg-white text-gray-700 text-left cursor-pointer flex justify-between items-center"
+            className="w-full p-3 rounded-xl border border-st shadow-md bg-white text-sc text-left cursor-pointer flex justify-between items-center"
             onClick={handleDropdownToggle}
           >
             {"I'm looking for a dog that..."}
@@ -72,7 +78,9 @@ const AdoptDog = () => {
             </svg>
           </button>
 
-          <div className={`transition-all duration-500 ease-out ${dropdownOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'} overflow-hidden`}>
+          <div
+            className={`transition-all duration-500 ease-out ${dropdownOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'} overflow-hidden`}
+          >
             <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
               {options.map((option, index) => (
                 <CustomButton
