@@ -1,20 +1,62 @@
 import React from 'react';
-import { Link } from 'react-router-dom'; 
-import dogImage from '../components/dog.jpg';
+import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate
+import { checkIfAdopterSuitabilityExists } from '../apis/api'; // Import the API function
+import dogImg from '../components/dog.jpg';
+import catImg from '../components/cat.jpg';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSyringe , faNeuter } from '@fortawesome/free-solid-svg-icons';
+import { faSyringe, faNeuter } from '@fortawesome/free-solid-svg-icons';
 
 const Popup = ({ isOpen, onClose, animal }) => {
+  const navigate = useNavigate(); // Use useNavigate hook for navigation
+
   if (!isOpen || !animal) return null; // Only render when the popup is open and animal is defined
 
   // Safely access animal fields with fallback values
-  const imageUrl = animal.imageUrl || dogImage; // Fallback image URL if no image
+  const imageUrl = animal.imageUrl || (animal.species.toLowerCase() === 'dog' ? dogImg : catImg); // Fallback image URL if no image
   const animalName = animal.name || 'Unknown Animal';
   const description = animal.description || 'No description available';
   const gender = animal.gender || 'Unknown';
   const age = animal.age || 'Unknown';
   const breed = animal.breed || 'Unknown';
   const weight = animal.weight || 'Unknown';
+
+  const handleAdoptClick = async () => {
+    // Check if the user is logged in
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/login'); // Redirect to login if not logged in
+      return;
+    }
+
+    try {
+      // Extract username from the token (assuming JWT with username payload)
+      const username = extractUsernameFromToken(token);
+
+      // Call the API function from api.js
+      const suitabilityExists = await checkIfAdopterSuitabilityExists(username);
+
+      if (suitabilityExists) {
+        // If suitability exists, navigate to the adoption booking page
+        navigate('/adoptbooking');
+      } else {
+        // If suitability does not exist, show a popup or alert
+        alert('Please complete your adopter suitability information before adopting.');
+        // You can also set a state to show a new popup with relevant information here
+      }
+    } catch (error) {
+      console.error('Error checking adopter suitability:', error);
+    }
+  };
+
+  const extractUsernameFromToken = (token) => {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.sub; // Adjust based on your token structure, usually 'sub' for username
+    } catch (error) {
+      console.error('Error extracting username from token:', error);
+      return null;
+    }
+  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
@@ -69,11 +111,12 @@ const Popup = ({ isOpen, onClose, animal }) => {
           </div>
 
           {/* Adoption Button */}
-          <Link to="/adoptbooking">
-            <button className="px-6 py-3 mr-auto font-poppins text-m rounded-lg bg-sc text-pr shadow-lg hover:bg-st transition duration-300">
-              I Want To Adopt!
-            </button>
-          </Link>
+          <button
+            className="px-6 py-3 mr-auto font-poppins text-m rounded-lg bg-sc text-pr shadow-lg hover:bg-st transition duration-300"
+            onClick={handleAdoptClick}
+          >
+            I Want To Adopt!
+          </button>
         </div>
       </div>
     </div>

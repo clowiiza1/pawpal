@@ -66,7 +66,7 @@ const LoginForm = ({ setIsLoggedIn }) => { // Added setIsLoggedIn prop
     <div className="flex flex-col bg-pr sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <h2 className="text-3xl font-extrabold text-center text-sc leading-9">
-          Sign in to your account
+          Please sign in to your account
         </h2>
       </div>
 

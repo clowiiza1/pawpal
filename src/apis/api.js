@@ -42,3 +42,22 @@ export const getProtectedData = async () => {
     return await api.get('/protected-data');
 };
 
+export const checkIfAdopterSuitabilityExists = async (username) => {
+    try {
+      const response = await api.get(`/adopter-suitability/user/${username}/exists`);
+      return response.data; // Should return true or false
+    } catch (error) {
+      console.error('Error checking adopter suitability:', error);
+      return false; // Return false on error
+    }
+  };
+
+export const filterAnimals = async (filterData) => {
+    try {
+      const response = await api.post('/animals/filter', filterData);
+      return response.data; // Assuming the filtered animals are returned in response.data
+    } catch (error) {
+      console.error('Error filtering animals:', error);
+      return [];
+    }
+  };

@@ -1,5 +1,6 @@
 import React from 'react';
 import dogImg from './dog.jpg';
+import catImg from './cat.jpg';
 
 const AnimalCard = ({ animal, onClick }) => {
   // Determine the type based on species and age
@@ -17,7 +18,7 @@ const AnimalCard = ({ animal, onClick }) => {
   };
 
   const animalType = determineType(animal.species, animal.age);
-  const imageUrl = animal.imageUrl || dogImg;
+  const imageUrl = animal.imageUrl || (animal.species.toLowerCase() === 'dog' ? dogImg : catImg);
 
   // Determine background and text color based on animal type
   const bgColor =
