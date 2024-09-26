@@ -33,12 +33,9 @@ const AnimalCard = ({ animal, onClick }) => {
       onClick={() => onClick(animal)} // Pass the animal object to the onClick handler
       className="bg-sc rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col justify-between cursor-pointer"
     >
+
       <div className="relative">
-        <img
-          src={imageUrl}
-          alt={animal.name}
-          className="w-full h-56 object-cover transition-transform duration-300 ease-in-out transform hover:scale-105" // Apply zoom effect on hover
-        />
+        <img src={imageUrl} alt={animal.name} className="w-full h-56 object-cover transition-transform duration-300 ease-in-out transform hover:scale-105"/>
       </div>
       <div className="p-4 flex flex-col flex-grow justify-between">
         <h2 className="text-2xl font-semibold text-pr mb-1 h-10 overflow-hidden text-center">{animal.name}</h2>

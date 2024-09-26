@@ -83,6 +83,7 @@ const Popup = ({ isOpen, onClose, animal }) => {
 
             {/* Animal Attributes */}
             <ul className="text-m">
+
               <li><strong>Gender:</strong> {gender === 'M' ? 'Male' : gender === 'F' ? 'Female' : gender}</li>
               <li><strong>Age:</strong> {age}</li>
               <li><strong>Breed:</strong> {breed}</li>
