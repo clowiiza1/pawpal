@@ -27,7 +27,10 @@ export default {
       },
       spacing: {
         '30': '7.8rem',  // Add '30' as 7.5rem (120px)
-      }
+      },
+      width: {
+        '86': '60.0 rem',
+      },
    },
   },
   plugins: [],

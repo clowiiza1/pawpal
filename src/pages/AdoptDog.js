@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import DogCard from '../components/DogCard';
+import AnimalCard from '../components/AnimalCard';
 import CustomButton from '../components/CustomButton';
 import Popup from '../components/Popup';
-import { getAnimals } from '../apis/api';
+import { getAnimals, filterAnimals } from '../apis/api';
 
 const AdoptDog = () => {
   const [animals, setAnimals] = useState([]);
   const [filteredAnimals, setFilteredAnimals] = useState([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [selectedDog, setSelectedDog] = useState(null);
+  const [activeFilters, setActiveFilters] = useState([]); // State for active filters
 
   const options = [
     "Needs a home-based owner",
@@ -29,28 +30,47 @@ const AdoptDog = () => {
 
   useEffect(() => {
     const fetchAnimals = async () => {
-      // Fetch all animals from the API
       const fetchedAnimals = await getAnimals();
-      
-      // Filter out only the dogs
-      const dogAnimals = fetchedAnimals.filter(animal => animal.species.toLowerCase() === 'dog');
-
-      // Update state with the filtered list
+      const dogAnimals = fetchedAnimals.filter(
+        (animal) => animal.species.toLowerCase() === 'dog' && animal.status.toLowerCase() === 'available'
+      );
       setAnimals(dogAnimals);
       setFilteredAnimals(dogAnimals);
     };
-
     fetchAnimals();
   }, []);
+
+  // Update the filter list whenever activeFilters state changes
+  useEffect(() => {
+    if (activeFilters.length === 0) {
+      setFilteredAnimals(animals); // Show all animals if no filters are selected
+    } else {
+      applyFilter(); // Apply filters
+    }
+  }, [activeFilters]);
 
   const handleDropdownToggle = () => {
     setDropdownOpen(!dropdownOpen);
   };
 
-  const filterAnimals = (option) => {
-    const filtered = animals.filter(animal => animal.attributes.includes(option));
+  // Apply filters and update the filteredAnimals state
+  const applyFilter = async () => {
+    const filterData = {
+      species: 'dog',
+      categories: activeFilters,
+    };
+
+    const filtered = await filterAnimals(filterData);
     setFilteredAnimals(filtered);
-    setDropdownOpen(false);
+  };
+
+  // Toggle filter state and update the activeFilters array
+  const handleFilterClick = (option) => {
+    setActiveFilters((prevFilters) =>
+      prevFilters.includes(option)
+        ? prevFilters.filter((filter) => filter !== option)
+        : [...prevFilters, option]
+    );
   };
 
   const handleCardClick = (dog) => {
@@ -81,11 +101,12 @@ const AdoptDog = () => {
           <div
             className={`transition-all duration-500 ease-out ${dropdownOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'} overflow-hidden`}
           >
-            <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+            <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 px-2 py-2">
               {options.map((option, index) => (
                 <CustomButton
                   key={index}
-                  onClick={() => filterAnimals(option)}
+                  onClick={() => handleFilterClick(option)}
+                  isActive={activeFilters.includes(option)} // Pass isActive prop
                   className={`transition-delay-${index * 50}ms`}
                 >
                   {option}
@@ -99,15 +120,22 @@ const AdoptDog = () => {
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {filteredAnimals.length > 0 ? (
             filteredAnimals.map((animal) => (
-              <DogCard key={animal.id} dog={animal} onClick={() => handleCardClick(animal)} />
+              <AnimalCard
+                key={animal.id}
+                animal={animal}
+                onClick={() => handleCardClick(animal)}
+              />
             ))
           ) : (
             <p className="text-center col-span-3 text-lg text-br">No dogs available for adoption at the moment.</p>
           )}
         </div>
 
-        {/* Popup for Dog Details */}
-        <Popup isOpen={selectedDog !== null} onClose={handleClosePopup} dog={selectedDog} />
+        <Popup
+          isOpen={selectedDog !== null}
+          onClose={handleClosePopup}
+          animal={selectedDog}
+        />
       </div>
     </div>
   );

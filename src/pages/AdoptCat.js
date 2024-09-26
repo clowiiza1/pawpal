@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import CatCard from '../components/CatCard';
-import CustomButton from '../components/CustomButton'; // Import the new CustomButton component
-import { getAnimals } from '../apis/api';
+import AnimalCard from '../components/AnimalCard';
+import CustomButton from '../components/CustomButton';
+import Popup from '../components/Popup'; // Import the Popup component
+import { getAnimals, filterAnimals } from '../apis/api';
 
 const AdoptCat = () => {
   const [animals, setAnimals] = useState([]);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [filteredAnimals, setFilteredAnimals] = useState([]);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [selectedAnimal, setSelectedAnimal] = useState(null);
+  const [activeFilters, setActiveFilters] = useState([]); // State for active filters
 
   const options = [
     "Is energetic and playful",
@@ -16,39 +19,67 @@ const AdoptCat = () => {
     "Is dog friendly",
     "Is good with other cats",
     "Is kid friendly",
+    "Can be left alone",
   ];
 
   useEffect(() => {
     const fetchAnimals = async () => {
-      // Fetch all animals from the API
       const fetchedAnimals = await getAnimals();
-      
-      // Filter out only the dogs
-      const catAnimals = fetchedAnimals.filter(animal => animal.species.toLowerCase() === 'cat');
-
-      // Update state with the filtered list
-      setAnimals(catAnimals);
-      setFilteredAnimals(catAnimals);
+      const dogAnimals = fetchedAnimals.filter(
+        (animal) => animal.species.toLowerCase() === 'cat' && animal.status.toLowerCase() === 'available'
+      );
+      setAnimals(dogAnimals);
+      setFilteredAnimals(dogAnimals);
     };
-
     fetchAnimals();
   }, []);
+
+  // Update the filter list whenever activeFilters state changes
+  useEffect(() => {
+    if (activeFilters.length === 0) {
+      setFilteredAnimals(animals); // Show all animals if no filters are selected
+    } else {
+      applyFilter(); // Apply filters
+    }
+  }, [activeFilters]);
 
   const handleDropdownToggle = () => {
     setDropdownOpen(!dropdownOpen);
   };
 
-  const filterAnimals = (option) => {
-    const filtered = animals.filter(animal => animal.attributes.includes(option));
+  // Apply filters and update the filteredAnimals state
+  const applyFilter = async () => {
+    const filterData = {
+      species: 'cat',
+      categories: activeFilters,
+    };
+
+    const filtered = await filterAnimals(filterData);
     setFilteredAnimals(filtered);
-    setDropdownOpen(false);
+  };
+
+  // Toggle filter state and update the activeFilters array
+  const handleFilterClick = (option) => {
+    setActiveFilters((prevFilters) =>
+      prevFilters.includes(option)
+        ? prevFilters.filter((filter) => filter !== option)
+        : [...prevFilters, option]
+    );
+  };
+
+  const handleCardClick = (animal) => {
+    setSelectedAnimal(animal); // Set selected animal for the popup
+  };
+
+  const handleClosePopup = () => {
+    setSelectedAnimal(null); // Close the popup
   };
 
   return (
     <div className="min-h-screen bg-pr py-10">
       <div className="max-w-7xl mx-auto px-4">
         <h1 className="text-4xl font-bold text-center text-sc mb-8">Cute Kittens & Cats</h1>
-        
+
         {/* Dropdown Filter */}
         <div className="w-full max-w-xl mx-auto mb-8 pb-4">
           <button
@@ -74,13 +105,9 @@ const AdoptCat = () => {
               {options.map((option, index) => (
                 <CustomButton
                   key={index}
-                  onClick={() => filterAnimals(option)}
+                  onClick={() => handleFilterClick(option)}
+                  isActive={activeFilters.includes(option)} // Pass isActive prop
                   className={`transition-delay-${index * 50}ms`}
-                  style={{
-                    opacity: dropdownOpen ? '1' : '0',
-                    transform: dropdownOpen ? 'translateY(0)' : 'translateY(-10px)',
-                    pointerEvents: dropdownOpen ? 'auto' : 'none',
-                  }}
                 >
                   {option}
                 </CustomButton>
@@ -89,16 +116,27 @@ const AdoptCat = () => {
           </div>
         </div>
 
-        {/* Dog Profiles */}
+        {/* Cat Profiles */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {filteredAnimals.length > 0 ? (
             filteredAnimals.map((animal) => (
-              <CatCard key={animal.id} cat={animal} />
+              <AnimalCard
+                key={animal.id}
+                animal={animal}
+                onClick={() => handleCardClick(animal)} // Add onClick handler to open popup
+              />
             ))
           ) : (
             <p className="text-center col-span-3 text-lg text-br">No cats available for adoption at the moment.</p>
           )}
         </div>
+
+        {/* Popup for Cat Details */}
+        <Popup
+          isOpen={selectedAnimal !== null} // Open popup if an animal is selected
+          onClose={handleClosePopup} // Close the popup
+          animal={selectedAnimal} // Pass the selected animal to the popup
+        />
       </div>
     </div>
   );
