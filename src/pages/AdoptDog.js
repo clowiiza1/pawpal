@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import DogCard from '../components/DogCard';
+import AnimalCard from '../components/AnimalCard';
 import CustomButton from '../components/CustomButton';
 import Popup from '../components/Popup';
 import { getAnimals } from '../apis/api';
@@ -8,7 +8,7 @@ const AdoptDog = () => {
   const [animals, setAnimals] = useState([]);
   const [filteredAnimals, setFilteredAnimals] = useState([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [selectedDog, setSelectedDog] = useState(null);
+  const [selectedDog, setSelectedDog] = useState(null); // State for selected dog
 
   const options = [
     "Needs a home-based owner",
@@ -31,9 +31,11 @@ const AdoptDog = () => {
     const fetchAnimals = async () => {
       // Fetch all animals from the API
       const fetchedAnimals = await getAnimals();
-      
+
       // Filter out only the dogs
-      const dogAnimals = fetchedAnimals.filter(animal => animal.species.toLowerCase() === 'dog');
+      const dogAnimals = fetchedAnimals.filter(
+        (animal) => animal.species.toLowerCase() === 'dog' && animal.status.toLowerCase() === 'available'
+      );
 
       // Update state with the filtered list
       setAnimals(dogAnimals);
@@ -48,17 +50,17 @@ const AdoptDog = () => {
   };
 
   const filterAnimals = (option) => {
-    const filtered = animals.filter(animal => animal.attributes.includes(option));
+    const filtered = animals.filter((animal) => animal.attributes.includes(option));
     setFilteredAnimals(filtered);
     setDropdownOpen(false);
   };
 
   const handleCardClick = (dog) => {
-    setSelectedDog(dog);
+    setSelectedDog(dog); // Set the selected dog for the popup
   };
 
   const handleClosePopup = () => {
-    setSelectedDog(null);
+    setSelectedDog(null); // Reset the selected dog to close the popup
   };
 
   return (
@@ -81,7 +83,7 @@ const AdoptDog = () => {
           <div
             className={`transition-all duration-500 ease-out ${dropdownOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'} overflow-hidden`}
           >
-            <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+            <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 px-2 py-2">
               {options.map((option, index) => (
                 <CustomButton
                   key={index}
@@ -99,7 +101,11 @@ const AdoptDog = () => {
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {filteredAnimals.length > 0 ? (
             filteredAnimals.map((animal) => (
-              <DogCard key={animal.id} dog={animal} onClick={() => handleCardClick(animal)} />
+              <AnimalCard
+                key={animal.id}
+                animal={animal}
+                onClick={() => handleCardClick(animal)} // Pass the clicked animal to the handler
+              />
             ))
           ) : (
             <p className="text-center col-span-3 text-lg text-br">No dogs available for adoption at the moment.</p>
@@ -107,7 +113,11 @@ const AdoptDog = () => {
         </div>
 
         {/* Popup for Dog Details */}
-        <Popup isOpen={selectedDog !== null} onClose={handleClosePopup} dog={selectedDog} />
+        <Popup
+          isOpen={selectedDog !== null} // Show popup if a dog is selected
+          onClose={handleClosePopup} // Handler to close the popup
+          animal={selectedDog} // Pass the selected dog to the popup
+        />
       </div>
     </div>
   );

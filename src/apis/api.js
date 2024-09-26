@@ -11,21 +11,6 @@ const api = axios.create({
     },
 });
 
-// Add a request interceptor to include the JWT token in all requests
-api.interceptors.request.use(
-    (config) => {
-        const token = localStorage.getItem('token'); // Retrieve the token from localStorage (or sessionStorage)
-        console.log('Interceptor token:', token); 
-        if (token) {
-            config.headers['Authorization'] = `Bearer ${token}`;
-        }
-        return config;
-    },
-    (error) => {
-        return Promise.reject(error);
-    }
-);
-
 export const getAnimals = async () => {
     try {
         const response = await api.get('/animals');
