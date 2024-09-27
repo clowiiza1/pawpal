@@ -88,7 +88,7 @@ function AdoptBookings() {
     </p>
   </div>
 </div>
-<div className="flex items-start mt-4">
+<div className="flex items-start mt-2">
   <div className="flex items-center justify-center w-10 h-10 rounded-full bg-sc text-white font-bold mr-4 flex-shrink-0">
     2
   </div>
@@ -102,18 +102,18 @@ function AdoptBookings() {
     </p>
   </div>
 </div>
-<div className="flex items-start mt-4">
+<div className="flex items-start mt-2">
   <div className="flex items-center justify-center w-10 h-10 rounded-full bg-sc text-white font-bold mr-4 flex-shrink-0">
     3
   </div>
   <div className="flex-grow w-90"> {/* Adjust width as needed */}
     <h3 className="text-xl font-semibold text-br">Visit the SPCA</h3>
     <p className="text-sc">
-      Get ready to meet your potential new best friend! Upon arrival, you'll be asked to complete the necessary paperwork.
+      Get ready to meet your potential new best friend! Upon arrival, you'll need to provide a certified copy of your ID or Passport and you'll be asked to complete the necessary paperwork.
     </p>
   </div>
 </div>
-<div className="flex items-start mt-4">
+<div className="flex items-start mt-2">
   <div className="flex items-center justify-center w-10 h-10 rounded-full bg-sc text-white font-bold mr-4 flex-shrink-0">
     4
   </div>
