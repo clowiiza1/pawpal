@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import bottlefedkitten from './bottlefedkitten.png';
+import dogwalk from './dogwalk.jpg';
 import VolunteerSignUp from '../components/VolunteerSignUp'; // Import the VolunteerSignUp component
+
 
 const Volunteer = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false); // State to manage popup visibility
@@ -22,7 +23,7 @@ const Volunteer = () => {
         {/* Image Section */}
         <div className="w-full md:w-1/2">
           <img
-            src={bottlefedkitten}
+            src={dogwalk}
             className="rounded-lg bg-st"
             style={{
               boxShadow: '20px 20px 0px #D8AE7E' // Statement color
@@ -34,12 +35,8 @@ const Volunteer = () => {
         {/* Volunteer Info Section */}
         <div className="w-full md:w-1/2 flex flex-col items-start pl-4">
           <h3 className="text-xl font-semibold text-sc mb-4">Volunteer your time</h3>
-          <p className="text-gray-600 mb-4">
-            Lorem ipsum dolor sit amet, British Shorthair do eiusmod tempor incididunt. Tempor orci eu Shiba Inu lobortis elementum nibh.
-          </p>
-          <p className="text-gray-600">
-            Lorem ipsum dolor sit amet, British Shorthair do eiusmod tempor incididunt. Tempor orci eu Shiba Inu lobortis elementum nibh.
-          </p>
+          <p className="text-black mb-4 text-justify">
+          Volunteering at the SPCA is a wonderful way to make a meaningful difference in the lives of animals in need. By offering your time and skills, you directly contribute to the well-being and happiness of our rescue animals. Whether it’s providing general care like feeding, washing, and grooming, or taking our dogs for walks to help socialize them and give them the love and attention they deserve, your efforts have a lasting impact. Volunteers can also help by writing creative bios for our website and social media channels, bringing out each animal's unique personality to attract potential adopters. If you have a passion for photography, capturing photos of our animals can showcase their charm and increase their chances of finding a forever home. No matter your role, your contribution as a volunteer will help us continue our mission of providing safe, loving environments for all our animals.          </p>
         </div>
       </div>
 
@@ -98,7 +95,7 @@ const Volunteer = () => {
 
       {/* Call to Action */}
       <div className="text-center mt-16">
-        <p className="text-lg text-gray-600 mb-4">If you have these skills, we'd love to meet you!</p>
+        <p className="text-lg text-black mb-4">If you have these skills, we'd love to meet you!</p>
         <button 
           className="bg-st hover:bg-pr hover:text-sc text-pr font-bold py-3 px-8 rounded-lg shadow-lg"
           onClick={() => setIsPopupOpen(true)} // Open the popup on click

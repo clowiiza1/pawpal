@@ -131,7 +131,7 @@ const VolunteerSignUp = ({ isOpen, onClose }) => {
                   />
                 </div>
               </div>
-
+              <div><p className = "font-semibold text-black">Volunteering hours are from 10 am to 1 pm, Monday to Saturday</p></div>
               <button
                 type="submit"
                 className="px-6 py-3 mt-4 font-poppins text-m rounded-lg bg-st text-pr shadow-lg hover:bg-st transition duration-300"

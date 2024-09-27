@@ -40,8 +40,9 @@ const Popup = ({ isOpen, onClose, animal }) => {
         navigate('/adoptbooking');
       } else {
         // If suitability does not exist, show a popup or alert
-        alert('Please complete your adopter suitability information before adopting.');
+        alert('Please fill in your adopter information before continuing');
         // You can also set a state to show a new popup with relevant information here
+        navigate('/adopterinfo');
       }
     } catch (error) {
       console.error('Error checking adopter suitability:', error);

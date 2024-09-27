@@ -12,6 +12,7 @@ import Preloader from './components/Preloader';
 import './App.css'; // Ensure this path is correct
 import Profile from './pages/Profile'; // Import Profile
 import AdoptBooking from './pages/AdoptBooking';
+import AdopterInfo from './pages/AdopterInfoTemp';
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -70,6 +71,7 @@ function App() {
               <Route path="/signup" element={<SignUp setIsLoggedIn={setIsLoggedIn} />} />
               <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/adopterinfo" element={<AdopterInfo />} />
             </Routes>
           </main>
           <Footer />
