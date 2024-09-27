@@ -21,6 +21,17 @@ export const getAnimals = async () => {
     }
 };
 
+// api to fetch user information for Profile page
+export const getUserProfile = async (username) => {
+  try {
+      const response = await api.get(`/users/${username}`); // Adjust endpoint as needed
+      return response.data; // Assuming your API returns user data in response.data
+  } catch (error) {
+      console.error('Error fetching user profile:', error);
+      return null; // Return null on error
+  }
+};
+
 // Login function
 export const login = async (credentials) => {
     const response = await api.post('/auth/login', credentials);
@@ -61,3 +72,5 @@ export const filterAnimals = async (filterData) => {
       return [];
     }
   };
+
+
