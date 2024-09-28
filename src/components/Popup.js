@@ -24,9 +24,11 @@ const Popup = ({ isOpen, onClose, animal }) => {
     // Check if the user is logged in
     const token = localStorage.getItem('token');
     if (!token) {
+      console.log('Animal ID:', animal.id);
       navigate('/login'); // Redirect to login if not logged in
       return;
     }
+
 
     try {
       // Extract username from the token (assuming JWT with username payload)
@@ -34,15 +36,16 @@ const Popup = ({ isOpen, onClose, animal }) => {
 
       // Call the API function from api.js
       const suitabilityExists = await checkIfAdopterSuitabilityExists(username);
-
+     
       if (suitabilityExists) {
         // If suitability exists, navigate to the adoption booking page
-        navigate('/adoptbooking');
+      
+        navigate('/adoptbooking', { state: { animalId: animal.id } });
       } else {
         // If suitability does not exist, show a popup or alert
         alert('Please fill in your adopter information before continuing');
         // You can also set a state to show a new popup with relevant information here
-        navigate('/adopterinfo');
+        navigate('/adopterinfo', { state: { animalId: animal.id } });
       }
     } catch (error) {
       console.error('Error checking adopter suitability:', error);

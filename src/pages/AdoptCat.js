@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import AnimalCard from '../components/AnimalCard';
 import CustomButton from '../components/CustomButton';
 import Popup from '../components/Popup'; // Import the Popup component
-import { getAnimals, filterAnimals } from '../apis/api';
+import { getAnimals, filterAnimals, getCategoriesBySpecies } from '../apis/api'; // Import getCategoriesBySpecies
 
 const AdoptCat = () => {
   const [animals, setAnimals] = useState([]);
@@ -10,26 +10,25 @@ const AdoptCat = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [selectedAnimal, setSelectedAnimal] = useState(null);
   const [activeFilters, setActiveFilters] = useState([]); // State for active filters
+  const [filterOptions, setFilterOptions] = useState([]); // State for filter options
 
-  const options = [
-    "Is energetic and playful",
-    "Is easy going",
-    "Has special needs",
-    "Doesn't shed too much",
-    "Is dog friendly",
-    "Is good with other cats",
-    "Is kid friendly",
-    "Can be left alone",
-  ];
+  // Fetch filter options from API based on species
+  useEffect(() => {
+    const fetchFilterOptions = async () => {
+      const options = await getCategoriesBySpecies('cat'); // Fetch categories for cats
+      setFilterOptions(options.map(option => option.name)); // Assuming options are in the format {id, name}
+    };
+    fetchFilterOptions();
+  }, []);
 
   useEffect(() => {
     const fetchAnimals = async () => {
       const fetchedAnimals = await getAnimals();
-      const dogAnimals = fetchedAnimals.filter(
+      const catAnimals = fetchedAnimals.filter(
         (animal) => animal.species.toLowerCase() === 'cat' && animal.status.toLowerCase() === 'available'
       );
-      setAnimals(dogAnimals);
-      setFilteredAnimals(dogAnimals);
+      setAnimals(catAnimals);
+      setFilteredAnimals(catAnimals);
     };
     fetchAnimals();
   }, []);
@@ -102,7 +101,7 @@ const AdoptCat = () => {
             className={`transition-all duration-500 ease-out ${dropdownOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'} overflow-hidden`}
           >
             <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 px-2 py-2">
-              {options.map((option, index) => (
+              {filterOptions.map((option, index) => (
                 <CustomButton
                   key={index}
                   onClick={() => handleFilterClick(option)}

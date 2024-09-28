@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import AnimalCard from '../components/AnimalCard';
 import CustomButton from '../components/CustomButton';
 import Popup from '../components/Popup';
-import { getAnimals, filterAnimals } from '../apis/api';
+import { getAnimals, filterAnimals, getCategoriesBySpecies } from '../apis/api';
 
 const AdoptDog = () => {
   const [animals, setAnimals] = useState([]);
@@ -10,23 +10,16 @@ const AdoptDog = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [selectedDog, setSelectedDog] = useState(null);
   const [activeFilters, setActiveFilters] = useState([]); // State for active filters
+  const [filterOptions, setFilterOptions] = useState([]); // State for filter options
 
-  const options = [
-    "Needs a home-based owner",
-    "Can be left alone",
-    "Is fine alone sometimes",
-    "Is lead trained",
-    "Is energetic",
-    "Is easy going",
-    "Has special needs",
-    "Is good for novice owners",
-    "Can learn tricks",
-    "Doesn't shed too much",
-    "Is cat friendly",
-    "Is suited to apartment life",
-    "Is good with other dogs",
-    "Is kid friendly",
-  ];
+  // Fetch filter options from API based on species
+  useEffect(() => {
+    const fetchFilterOptions = async () => {
+      const options = await getCategoriesBySpecies('dog'); // Replace 'dog' with dynamic species if needed
+      setFilterOptions(options.map(option => option.name)); // Assuming options are in the format {id, name}
+    };
+    fetchFilterOptions();
+  }, []);
 
   useEffect(() => {
     const fetchAnimals = async () => {
@@ -108,7 +101,7 @@ const AdoptDog = () => {
             className={`transition-all duration-500 ease-out ${dropdownOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'} overflow-hidden`}
           >
             <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 px-2 py-2">
-              {options.map((option, index) => (
+              {filterOptions.map((option, index) => (
                 <CustomButton
                   key={index}
                   onClick={() => handleFilterClick(option)}

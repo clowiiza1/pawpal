@@ -13,6 +13,7 @@ import './App.css'; // Ensure this path is correct
 import Profile from './pages/Profile'; // Import Profile
 import AdoptBooking from './pages/AdoptBooking';
 import AdopterInfo from './pages/AdopterInfoTemp';
+import Calendar from './pages/Calendar';
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -72,6 +73,7 @@ function App() {
               <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/adopterinfo" element={<AdopterInfo />} />
+              <Route path="/calendar" element={<Calendar />} />
             </Routes>
           </main>
           <Footer />

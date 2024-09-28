@@ -21,15 +21,36 @@ export const getAnimals = async () => {
     }
 };
 
-// api to fetch user information for Profile page
-export const getUserProfile = async (username) => {
+// Fetch a specific animal by its ID
+export const getAnimalById = async (id) => {
+    try {
+        const response = await api.get(`/animals/${id}`);
+        return response.data; // Assuming your API returns the animal data in response.data
+    } catch (error) {
+        console.error(`Error fetching animal with ID ${id}:`, error);
+        return null; // Return null on error
+    }
+};
+
+export const getCategoriesBySpecies = async (species) => {
   try {
-      const response = await api.get(`/users/${username}`); // Adjust endpoint as needed
-      return response.data; // Assuming your API returns user data in response.data
+      const response = await api.get(`/categories/species/${species}`);
+      return response.data; // Assuming your API returns the list of CategoryDto objects in response.data
   } catch (error) {
-      console.error('Error fetching user profile:', error);
-      return null; // Return null on error
+      console.error(`Error fetching categories for species ${species}:`, error);
+      return []; // Return an empty array on error
   }
+};
+// Other API functions...
+
+export const getUserProfile = async (username) => {
+    try {
+        const response = await api.get(`/users/${username}`); // Adjust endpoint as needed
+        return response.data; // Assuming your API returns user data in response.data
+    } catch (error) {
+        console.error('Error fetching user profile:', error);
+        return null; // Return null on error
+    }
 };
 
 // Login function
@@ -55,22 +76,20 @@ export const getProtectedData = async () => {
 
 export const checkIfAdopterSuitabilityExists = async (username) => {
     try {
-      const response = await api.get(`/adopter-suitability/user/${username}/exists`);
-      return response.data; // Should return true or false
+        const response = await api.get(`/adopter-suitability/user/${username}/exists`);
+        return response.data; // Should return true or false
     } catch (error) {
-      console.error('Error checking adopter suitability:', error);
-      return false; // Return false on error
+        console.error('Error checking adopter suitability:', error);
+        return false; // Return false on error
     }
-  };
+};
 
 export const filterAnimals = async (filterData) => {
     try {
-      const response = await api.post('/animals/filter', filterData);
-      return response.data; // Assuming the filtered animals are returned in response.data
+        const response = await api.post('/animals/filter', filterData);
+        return response.data; // Assuming the filtered animals are returned in response.data
     } catch (error) {
-      console.error('Error filtering animals:', error);
-      return [];
+        console.error('Error filtering animals:', error);
+        return [];
     }
-  };
-
-
+};

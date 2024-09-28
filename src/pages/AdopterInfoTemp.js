@@ -1,14 +1,18 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const AdopterInfo = () => {
   const [numAnimals, setNumAnimals] = useState('');
   const [livingEnvironment, setLivingEnvironment] = useState('');
   const [errors, setErrors] = useState({});
+  const routerLocation = useLocation(); // Renamed from location to routerLocation
+  const { animalId } = routerLocation.state || {}; // Get animalId from routerLocation state
+  const navigate = useNavigate();
 
   // Options for the dropdown
   const livingOptions = ['Residential', 'Apartment', 'Farm', 'Townhouse'];
-  const navigate = useNavigate();
+
+  console.log('Received animalId in AdopterInfo:', animalId);
 
   // Function to validate the form
   const validateForm = () => {
@@ -23,13 +27,15 @@ const AdopterInfo = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  
   // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
     if (validateForm()) {
+      console.log(animalId);
       alert('Form submitted successfully!');
-      navigate('/adoptbooking');
-      // Here, you would normally send the data to your backend or API
+      // Navigate to adoptbooking and pass the animalId along with it
+      navigate('/adoptbooking', { state: { animalId } });
     }
   };
 
@@ -54,7 +60,7 @@ const AdopterInfo = () => {
               required
               onChange={(e) => setNumAnimals(e.target.value)}
               className={`w-full p-3 border ${errors.numAnimals ? 'border-red-500' : 'border-st'} rounded-lg focus:outline-none focus:ring-2 text-black focus:ring-sc`}
-              placeholder= "Please enter the number of animals you currently have"
+              placeholder="Please enter the number of animals you currently have"
             />
             {errors.numAnimals && <p className="text-red-500 text-sm mt-1">{errors.numAnimals}</p>}
           </div>
