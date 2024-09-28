@@ -11,6 +11,22 @@ const api = axios.create({
     },
 });
 
+api.interceptors.request.use(
+    (config) => {
+        const token = localStorage.getItem('token'); 
+
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+
+        return config;
+    },
+    (error) => {
+        // Handle the error
+        return Promise.reject(error);
+    }
+);
+
 export const getAnimals = async () => {
     try {
         const response = await api.get('/animals');
@@ -90,6 +106,16 @@ export const filterAnimals = async (filterData) => {
         return response.data; // Assuming the filtered animals are returned in response.data
     } catch (error) {
         console.error('Error filtering animals:', error);
+        return [];
+    }
+};
+
+export const setAdopterInfo = async (adopterInfo) => {
+    try {
+        const response = await api.post('/adopter-suitability', adopterInfo);
+        return response.data; 
+    } catch (error) {
+        console.error('Error submitting adoupter:', error);
         return [];
     }
 };
