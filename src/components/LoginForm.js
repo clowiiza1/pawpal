@@ -1,17 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { login } from '../apis/api'; // Import the login function
 import '../App.css';
 
-const LoginForm = ({ setIsLoggedIn }) => { // Added setIsLoggedIn prop
+const LoginForm = ({ setIsLoggedIn }) => {
   const [formData, setFormData] = useState({
     username: '',
     password: '',
   });
 
   const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false); // New state for success message
-  const navigate = useNavigate(); // Use navigate to redirect after login
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [dots, setDots] = useState(''); // New state for dots
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -19,48 +20,56 @@ const LoginForm = ({ setIsLoggedIn }) => { // Added setIsLoggedIn prop
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoggingIn(true);
+    setError(null);
+    setDots(''); // Reset dots when submitting
+
     try {
       const response = await login({
         username: formData.username,
         password: formData.password,
       });
-  
-      // Log the full response to check the structure
-      console.log("Login response:", response);
-      console.log('Login response data:', response.data);
-  
-      // Log the token field to verify it is correct
+
       const token = response.data.accessToken;
-      console.log("Token:", token);
-      
-  
+
       if (token) {
-        // Store the JWT token and the username
         localStorage.setItem('token', token);
         localStorage.setItem('username', formData.username);
-  
-        // Show success message
-        setSuccess(true);
-        setError(null);
-  
-        // Update the login status
+
         setIsLoggedIn(true);
-  
+
         // Redirect to the homepage or dashboard after a short delay
         setTimeout(() => {
-          navigate('/');
-        }, 1000);
+          navigate('/'); // Redirect to the desired route
+        }, 2000);
       } else {
         throw new Error('Token not found in response');
       }
-  
     } catch (error) {
       console.error('Login failed:', error.response?.data || error.message);
       setError('Login failed. Please check your credentials.');
-      setSuccess(false);
+      setIsLoggingIn(false);
     }
   };
-  
+
+  useEffect(() => {
+    let intervalId;
+
+    if (isLoggingIn) {
+      intervalId = setInterval(() => {
+        setDots((prevDots) => {
+          if (prevDots.length < 3) {
+            return prevDots + '.';
+          }
+          return '';
+        });
+      }, 500);
+    }
+
+    return () => {
+      clearInterval(intervalId); // Cleanup interval on unmount
+    };
+  }, [isLoggingIn]);
 
   return (
     <div className="flex flex-col bg-pr sm:px-6 lg:px-8">
@@ -109,15 +118,14 @@ const LoginForm = ({ setIsLoggedIn }) => { // Added setIsLoggedIn prop
             </div>
 
             {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
-            {success && <p className="text-green-500 text-sm mt-2">Login successful! Redirecting...</p>}
 
             <div className="mt-6">
               <span className="block w-full rounded-md shadow-pr">
                 <button
                   type="submit"
-                  className="flex justify-center w-full px-4 py-2 text-pr font-medium text-pr bg-st border border-transparent rounded-md hover:opacity-70 focus:outline-none focus:border-pr focus:shadow-outline-pr active:bg-pr transition duration-150 ease-in-out"
+                  className="flex justify-center w-full px-4 py-2 text-pr font-black text-pr bg-st border border-transparent rounded-md hover:opacity-70 focus:outline-none focus:border-pr focus:shadow-outline-pr active:bg-pr transition duration-150 ease-in-out"
                 >
-                  Sign in
+                  {isLoggingIn ? `Logging you in${dots}` : 'Sign in'} {/* Change button text based on login status */}
                 </button>
               </span>
             </div>
