@@ -14,6 +14,7 @@ import Profile from './pages/Profile'; // Import Profile
 import AdoptBooking from './pages/AdoptBooking';
 import AdopterInfo from './pages/AdopterInfoTemp';
 import Calendar from './pages/Calendar';
+import AdminDashboard from './pages/AdminDashboard';
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -74,6 +75,7 @@ function App() {
               <Route path="/profile" element={<Profile />} />
               <Route path="/adopterinfo" element={<AdopterInfo />} />
               <Route path="/calendar" element={<Calendar />} />
+              <Route path="/admin" element={<AdminDashboard />} />
             </Routes>
           </main>
           <Footer />

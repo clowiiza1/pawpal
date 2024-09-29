@@ -119,3 +119,106 @@ export const setAdopterInfo = async (adopterInfo) => {
         return [];
     }
 };
+
+export const getBookings = async () => {
+  try {
+      const response = await api.get('/bookings'); // Make sure this endpoint returns the status field
+      return response.data; // Assuming your API returns the booking list including status in response.data
+  } catch (error) {
+      console.error('Error fetching bookings:', error);
+      return []; // Return an empty array on error
+  }
+};
+
+
+
+// Fetch user by ID
+export const getUserById = async (userId) => {
+  try {
+      const response = await api.get(`/users/${userId}`);
+      return response.data; // Assuming your API returns the user data in response.data
+  } catch (error) {
+      console.error(`Error fetching user with ID ${userId}:`, error);
+      return null; // Return null on error
+  }
+};
+
+export const getCategories = async () => {
+  try {
+      const response = await api.get('/categories');
+      return response.data; // Assuming your API returns the category list in response.data
+  } catch (error) {
+      console.error('Error fetching categories:', error);
+      return []; // Return an empty array on error
+  }
+};
+
+export const deleteCategory = async (categoryId) => {
+  try {
+      const response = await api.delete(`/categories/${categoryId}`);
+      return response.data; // Assuming the API returns a success message or deleted ID in response.data
+  } catch (error) {
+      console.error(`Error deleting category with ID ${categoryId}:`, error);
+      return null; // Return null on error
+  }
+};
+
+export const updateCategory = async (category) => {
+  try {
+      if (Array.isArray(category.animalType)) {
+          category.animalType = category.animalType.join(',');
+      }
+      const response = await api.put('/categories', category);
+      return response.data; // Assuming the updated category is returned in response.data
+  } catch (error) {
+      console.error('Error updating category:', error);
+      return null; // Return null on error
+  }
+};
+
+export const addCategory = async (category) => {
+  try {
+      // Send animalType as "Dog,Cat" if both are selected
+      if (Array.isArray(category.animalType)) {
+          category.animalType = category.animalType.join(',');
+      }
+      const response = await api.post('/categories', category);
+      return response.data; // Assuming the added category is returned in response.data
+  } catch (error) {
+      console.error('Error adding category:', error);
+      return null; // Return null on error
+  }
+};
+
+// Add booking (if needed)
+export const addBooking = async (booking) => {
+  try {
+      const response = await api.post('/bookings', booking);
+      return response.data; // Assuming the added booking is returned in response.data
+  } catch (error) {
+      console.error('Error adding booking:', error);
+      return null; // Return null on error
+  }
+};
+
+// Update booking (if needed)
+export const updateBooking = async (booking) => {
+  try {
+      const response = await api.put(`/bookings/${booking.id}`, booking);
+      return response.data; // Assuming the updated booking is returned in response.data
+  } catch (error) {
+      console.error('Error updating booking:', error);
+      return null; // Return null on error
+  }
+};
+
+// Delete booking
+export const deleteBooking = async (bookingId) => {
+  try {
+      const response = await api.delete(`/bookings/${bookingId}`);
+      return response.data; // Assuming the API returns a success message or deleted ID in response.data
+  } catch (error) {
+      console.error(`Error deleting booking with ID ${bookingId}:`, error);
+      return null; // Return null on error
+  }
+};
