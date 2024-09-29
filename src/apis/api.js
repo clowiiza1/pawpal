@@ -222,3 +222,23 @@ export const deleteBooking = async (bookingId) => {
       return null; // Return null on error
   }
 };
+
+export const getUserRoles = async () => {
+  try {
+      const response = await api.get('/users/role');
+      return response.data; // Assuming your API returns the list of roles in response.data
+  } catch (error) {
+      console.error('Error fetching user roles:', error);
+      return []; // Return an empty array on error
+  }
+};
+
+export const getAllUsers = async () => {
+  try {
+      const response = await api.get('/users');
+      return response.data; // Assuming the API returns the user data in response.data
+  } catch (error) {
+      console.error('Error fetching users:', error);
+      return []; // Return an empty array on error
+  }
+};

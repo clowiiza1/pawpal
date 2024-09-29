@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 //import { useNavigate } from 'react-router-dom';
-import signupImage from '../components/SignUpForm.jpeg'; // Replace with your actual image path
+import signupImage from './SignUpForm.jpeg'; // Replace with your actual image path
 
 const SignupForm = ({ formData, updateFormData, nextStep }) => {
   const [localData, setLocalData] = useState({

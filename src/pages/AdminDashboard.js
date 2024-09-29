@@ -1,12 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import UsersTab from '../components/UsersTab';
 import CategoriesTab from '../components/CategoriesTab';
 import BookingsTab from '../components/BookingsTab';
 import ReportsTab from '../components/ReportsTab';
-// Import other tab components here
+import AnimalsTab from '../components/AnimalsTab';
+import { getUserRoles } from '../apis/api'; // Import the API call
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('categories'); // Default tab set to categories for demonstration
+  const navigate = useNavigate(); // Hook to navigate programmatically
+
+  useEffect(() => {
+    // Call the API to fetch user roles when the component mounts
+    const checkUserRole = async () => {
+      try {
+        const roles = await getUserRoles();
+        const isAdminOrStaff = roles.some(role => role.name === 'Admin' || role.name === 'Staff');
+
+        if (!isAdminOrStaff) {
+          // Redirect the user if they don't have the required role
+          navigate('/');
+        }
+      } catch (error) {
+        console.error('Error fetching user roles:', error);
+        // Optionally handle error (e.g., redirect to an error page)
+        navigate('/unauthorized'); // Redirect to an unauthorized page on error
+      }
+    };
+
+    checkUserRole();
+  }, [navigate]);
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
@@ -15,7 +39,7 @@ const AdminDashboard = () => {
   return (
     <div className="flex min-h-screen">
       <aside className="w-1/4 h-screen bg-st p-8 flex flex-col rounded-3xl ml-4 mt-4">
-        <h1 className="text-2xl text-sc font-bold mb-8 justify-center">Admin Dashboard</h1>
+        <h1 className="text-2xl text-sc font-bold mb-8 justify-center">Staff Dashboard</h1>
         <ul className="space-y-6">
           <li>
             <button
@@ -43,6 +67,14 @@ const AdminDashboard = () => {
           </li>
           <li>
             <button
+              className={`w-full ${activeTab === 'animals' ? 'bg-sc text-pr' : 'bg-pr text-sc'} py-4 text-lg font-bold rounded-lg shadow-md`}
+              onClick={() => handleTabChange('animals')}
+            >
+              Animals
+            </button>
+          </li>
+          <li>
+            <button
               className={`w-full ${activeTab === 'reports' ? 'bg-sc text-pr' : 'bg-pr text-sc'} py-4 text-lg font-bold rounded-lg shadow-md`}
               onClick={() => handleTabChange('reports')}
             >
@@ -57,6 +89,7 @@ const AdminDashboard = () => {
         {activeTab === 'categories' && <CategoriesTab />}
         {activeTab === 'bookings' && <BookingsTab />}
         {activeTab === 'reports' && <ReportsTab />}
+        {activeTab === 'animals' && <AnimalsTab />}
         {/* Add other tab components here */}
       </main>
     </div>
