@@ -1,15 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { FaTrash, FaPen, FaPlusCircle } from 'react-icons/fa';
 import { getCategories, deleteCategory, updateCategory, addCategory } from '../apis/api';
+import Toast from './Toast'; // Adjust the import path as necessary
 
 const CategoriesTab = () => {
   const [categories, setCategories] = useState([]);
-  const [filter, setFilter] = useState('all'); // Added filter state for categories
+  const [filter, setFilter] = useState('all'); // Filter state for categories
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false); // State for add modal
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [newCategory, setNewCategory] = useState({ name: '', animalType: 'Dog' }); // State for new category
+
+  // State variables for toast messages
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -33,6 +38,9 @@ const CategoriesTab = () => {
     if (selectedCategory) {
       await deleteCategory(selectedCategory.id);
       setCategories(categories.filter((category) => category !== selectedCategory));
+      // Show success toast
+      setToastMessage(`Deleted category "${selectedCategory.name}" successfully.`);
+      setShowToast(true);
     }
     setShowDeleteModal(false);
     setSelectedCategory(null);
@@ -46,6 +54,9 @@ const CategoriesTab = () => {
           category.id === updatedCategory.id ? updatedCategory : category
         )
       );
+      // Show success toast
+      setToastMessage(`Updated category "${updatedCategory.name}" successfully.`);
+      setShowToast(true);
     }
     setShowEditModal(false);
     setSelectedCategory(null);
@@ -73,6 +84,9 @@ const CategoriesTab = () => {
       setCategories([...categories, addedCategory]);
       setShowAddModal(false);
       setNewCategory({ name: '', animalType: 'Dog' }); // Reset new category state
+      // Show success toast
+      setToastMessage(`Added category "${addedCategory.name}" successfully.`);
+      setShowToast(true);
     }
   };
 
@@ -82,31 +96,45 @@ const CategoriesTab = () => {
     return category.animalType.includes(filter);
   });
 
+  // Function to handle closing the toast
+  const handleCloseToast = () => {
+    setShowToast(false);
+    setToastMessage('');
+  };
+
   return (
     <div className="ml-6 pb-4">
-      <h2 className="text-2xl font-bold text-sc mb-4">Categories</h2>
+      <h2 className="text-2xl font-bold text-sc mb-4">Traits</h2>
       {/* Filter Buttons */}
       <div className="flex space-x-4 mb-6">
         <button
-          className={`px-4 py-2 rounded-lg ${filter === 'all' ? 'bg-sc text-pr' : 'bg-pr text-sc'}`}
+          className={`px-4 py-2 rounded-lg ${
+            filter === 'all' ? 'bg-sc text-pr' : 'bg-pr text-sc'
+          }`}
           onClick={() => setFilter('all')}
         >
           All ({categories.length})
         </button>
         <button
-          className={`px-4 py-2 rounded-lg ${filter === 'Dog' ? 'bg-sc text-pr' : 'bg-pr text-sc'}`}
+          className={`px-4 py-2 rounded-lg ${
+            filter === 'Dog' ? 'bg-sc text-pr' : 'bg-pr text-sc'
+          }`}
           onClick={() => setFilter('Dog')}
         >
           Dog ({categories.filter((category) => category.animalType.includes('Dog')).length})
         </button>
         <button
-          className={`px-4 py-2 rounded-lg ${filter === 'Cat' ? 'bg-sc text-pr' : 'bg-pr text-sc'}`}
+          className={`px-4 py-2 rounded-lg ${
+            filter === 'Cat' ? 'bg-sc text-pr' : 'bg-pr text-sc'
+          }`}
           onClick={() => setFilter('Cat')}
         >
           Cat ({categories.filter((category) => category.animalType.includes('Cat')).length})
         </button>
         <button
-          className={`px-4 py-2 rounded-lg ${filter === 'Dog,Cat' ? 'bg-sc text-pr' : 'bg-pr text-sc'}`}
+          className={`px-4 py-2 rounded-lg ${
+            filter === 'Dog,Cat' ? 'bg-sc text-pr' : 'bg-pr text-sc'
+          }`}
           onClick={() => setFilter('Dog,Cat')}
         >
           Dog & Cat ({categories.filter((category) => category.animalType === 'Dog,Cat').length})
@@ -269,6 +297,8 @@ const CategoriesTab = () => {
           </div>
         </div>
       )}
+      {/* Render Toast Message */}
+      {showToast && <Toast message={toastMessage} onClose={handleCloseToast} />}
     </div>
   );
 };

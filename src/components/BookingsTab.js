@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { FaPen } from 'react-icons/fa';
-import { getBookings, getUserById, getAnimalById, updateBooking } from '../apis/api'; // Importing API functions
+import {
+  getBookings,
+  getUserById,
+  getAnimalById,
+  updateBookingStatus,
+} from '../apis/api'; // Importing API functions
+import Toast from './Toast'; // Adjust the path as needed
 
 const BookingsTab = () => {
   const [bookings, setBookings] = useState([]);
@@ -9,6 +15,8 @@ const BookingsTab = () => {
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [statusOptions] = useState(['Pending', 'Approved', 'Rejected', 'Completed']);
   const [isEditing, setIsEditing] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -27,6 +35,7 @@ const BookingsTab = () => {
 
           return {
             ...booking,
+            bookingID: booking.bookingID, // Ensure bookingID is included
             user,
             animal,
           };
@@ -48,7 +57,11 @@ const BookingsTab = () => {
   }, [filter, bookings]);
 
   const handleEditBooking = (booking) => {
-    setSelectedBooking(booking);
+    setSelectedBooking({
+      bookingID: booking.bookingID,
+      status: booking.status,
+      // Include other fields if necessary
+    });
     setIsEditing(true);
   };
 
@@ -58,9 +71,28 @@ const BookingsTab = () => {
 
   const saveBookingStatus = async () => {
     if (selectedBooking) {
-      await updateBooking(selectedBooking);
-      setIsEditing(false);
-      setSelectedBooking(null);
+      const updatedBooking = await updateBookingStatus(
+        selectedBooking.bookingID,
+        selectedBooking.status
+      );
+      if (updatedBooking) {
+        setIsEditing(false);
+        setSelectedBooking(null);
+        // Update bookings state
+        setBookings((prevBookings) =>
+          prevBookings.map((booking) =>
+            booking.bookingID === updatedBooking.bookingID
+              ? { ...booking, status: updatedBooking.status }
+              : booking
+          )
+        );
+        // Show success toast
+        setToastMessage('Successfully updated the booking status.');
+        setShowToast(true);
+      } else {
+        // Handle error
+        alert('Failed to update booking status.');
+      }
     }
   };
 
@@ -85,25 +117,36 @@ const BookingsTab = () => {
     }
   };
 
+  const handleCloseToast = () => {
+    setShowToast(false);
+    setToastMessage('');
+  };
+
   return (
     <div className="ml-6 pb-4">
       <h2 className="text-2xl font-bold text-sc mb-4">Bookings</h2>
       {/* Filter Buttons */}
       <div className="flex space-x-4 mb-6">
         <button
-          className={`px-4 py-2 rounded-lg ${filter === 'all' ? 'bg-sc text-pr' : 'bg-pr text-sc'}`}
+          className={`px-4 py-2 rounded-lg ${
+            filter === 'all' ? 'bg-sc text-pr' : 'bg-pr text-sc'
+          }`}
           onClick={() => setFilter('all')}
         >
           All ({bookings.length})
         </button>
         <button
-          className={`px-4 py-2 rounded-lg ${filter === 'Adopter' ? 'bg-sc text-pr' : 'bg-pr text-sc'}`}
+          className={`px-4 py-2 rounded-lg ${
+            filter === 'Adopter' ? 'bg-sc text-pr' : 'bg-pr text-sc'
+          }`}
           onClick={() => setFilter('Adopter')}
         >
           Adopter ({bookings.filter((booking) => booking.bookingType === 'Adopter').length})
         </button>
         <button
-          className={`px-4 py-2 rounded-lg ${filter === 'Volunteer' ? 'bg-sc text-pr' : 'bg-pr text-sc'}`}
+          className={`px-4 py-2 rounded-lg ${
+            filter === 'Volunteer' ? 'bg-sc text-pr' : 'bg-pr text-sc'
+          }`}
           onClick={() => setFilter('Volunteer')}
         >
           Volunteer ({bookings.filter((booking) => booking.bookingType === 'Volunteer').length})
@@ -127,15 +170,23 @@ const BookingsTab = () => {
           <tbody>
             {filteredBookings.map((booking, index) => (
               <tr key={index} className="border-b">
-                <td className="py-3 px-4">{`${booking.user?.firstName || ''} ${booking.user?.lastName || ''}`}</td>
+                <td className="py-3 px-4">{`${booking.user?.firstName || ''} ${
+                  booking.user?.lastName || ''
+                }`}</td>
                 <td className="py-3 px-4">{booking.user?.phoneNumber || ''}</td>
                 <td className="py-3 px-4">{booking.bookingType}</td>
                 <td className="py-3 px-4">{booking.animal?.name || '-'}</td>
-                <td className="py-3 px-4">{new Date(booking.bookingSlot).toLocaleDateString()}</td>
+                <td className="py-3 px-4">
+                  {new Date(booking.bookingSlot).toLocaleDateString()}
+                </td>
                 <td className="py-3 px-4">{getTimeSlot(booking)}</td>
                 <td className="py-3 px-4">
                   {isEditing && selectedBooking?.bookingID === booking.bookingID ? (
-                    <select value={selectedBooking.status} onChange={handleStatusChange} className="rounded-lg border-gray-300">
+                    <select
+                      value={selectedBooking.status}
+                      onChange={handleStatusChange}
+                      className="rounded-lg border-gray-300"
+                    >
                       {statusOptions.map((status) => (
                         <option key={status} value={status}>
                           {status}
@@ -174,6 +225,8 @@ const BookingsTab = () => {
           </tbody>
         </table>
       </div>
+      {/* Render Toast Message */}
+      {showToast && <Toast message={toastMessage} onClose={handleCloseToast} />}
     </div>
   );
 };

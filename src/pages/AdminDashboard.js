@@ -50,14 +50,7 @@ const AdminDashboard = () => {
               Users
             </button>
           </li>
-          <li>
-            <button
-              className={`w-full ${activeTab === 'categories' ? 'bg-sc text-pr' : 'bg-pr text-sc'} py-4 text-lg font-bold rounded-lg shadow-md`}
-              onClick={() => handleTabChange('categories')}
-            >
-              Categories
-            </button>
-          </li>
+          
           <li>
             <button
               className={`w-full ${activeTab === 'bookings' ? 'bg-sc text-pr' : 'bg-pr text-sc'} py-4 text-lg font-bold rounded-lg shadow-md`}
@@ -72,6 +65,14 @@ const AdminDashboard = () => {
               onClick={() => handleTabChange('animals')}
             >
               Animals
+            </button>
+          </li>
+          <li>
+            <button
+              className={`w-full ${activeTab === 'categories' ? 'bg-sc text-pr' : 'bg-pr text-sc'} py-4 text-lg font-bold rounded-lg shadow-md`}
+              onClick={() => handleTabChange('categories')}
+            >
+              Traits
             </button>
           </li>
           <li>

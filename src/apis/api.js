@@ -210,15 +210,7 @@ export const setVolunteerInformation = async (adopterInfo) => {
     }
 };
 
-export const setVolunteerInformation = async (adopterInfo) => {
-    try {
-        const response = await api.post('/volunteer-info', adopterInfo);
-        return response.data;
-    } catch (error) {
-        console.error('Error submitting adoupter:', error);
-        return [];
-    }
-};
+
 
 // Add booking (if needed)
 export const addBooking = async (booking) => {
@@ -273,8 +265,8 @@ export const bookVolunteer = async (date) => {
     }
 };
 
-  }
-};
+  
+
 
 export const getUserRoles = async () => {
   try {
@@ -323,6 +315,25 @@ export const updateAnimalCategories = async (animalId, categoryIds) => {
     } catch (error) {
       console.error(`Error deleting animal with ID ${animalId}:`, error);
       throw error;
+    }
+  };
+  export const addAnimal = async (animal) => {
+  try {
+    const response = await api.post('/animals', animal);
+    return response.data; // Return the added animal
+  } catch (error) {
+    console.error('Error adding animal:', error);
+    throw error;
+  }
+};
+
+export const updateBookingStatus = async (bookingId, status) => {
+    try {
+      const response = await api.put(`/bookings/${bookingId}/status`, { status });
+      return response.data;
+    } catch (error) {
+      console.error('Error updating booking status:', error);
+      return null;
     }
   };
   

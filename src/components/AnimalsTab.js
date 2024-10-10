@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import AnimalCard from './AnimalCard';
 import Popup from './Popup'; // Import the Popup component
 import { getAnimals, updateAnimal, deleteAnimal } from '../apis/api'; 
-import { FaSearch, FaSortAlphaDown, FaSortAlphaUp } from 'react-icons/fa';
+import { FaSearch, FaSortAlphaDown, FaSortAlphaUp, FaPlus } from 'react-icons/fa';
 import Toast from './Toast'; 
+import AddAnimalPopup from './AddAnimalPopup';
 
 const AnimalsTab = () => {
   const [animals, setAnimals] = useState([]);
@@ -17,6 +18,7 @@ const AnimalsTab = () => {
   const [searchQuery, setSearchQuery] = useState(''); // Search input
   const [sortOrder, setSortOrder] = useState('asc'); // Sorting order for animal names
   const [toastMessage, setToastMessage] = useState('');
+  const [isAddPopupOpen, setIsAddPopupOpen] = useState(false);
   useEffect(() => {
     fetchAnimals();
   }, []); // Fetch animals only on component mount
@@ -104,6 +106,14 @@ const AnimalsTab = () => {
     setIsPopupOpen(false);
     setSelectedAnimal(null);
   };
+  const openAddAnimalPopup = () => {
+    setIsAddPopupOpen(true);
+  };
+
+  const handleCloseAddPopup = () => {
+    setIsAddPopupOpen(false);
+  };
+
 
   const closeToast = () => {
     setToastMessage(''); // Clear the toast message after 3 seconds
@@ -231,15 +241,27 @@ const AnimalsTab = () => {
 
       {/* Animals Grid */}
       <div className="grid grid-cols-3 gap-4">
-        {filteredAnimals.length > 0 ? (
-          filteredAnimals.map((animal) => (
-            <AnimalCard key={animal.id} animal={animal} onClick={handleAnimalClick} />
-          ))
-        ) : (
-          <p>No animals available.</p>
-        )}
-      </div>
+        {/* Add New Animal Card */}
+        <div
+          className="flex items-center justify-center border-2 border-dashed border-sc bg-pr text-sc h-full cursor-pointer rounded-lg"
+          onClick={openAddAnimalPopup}
+        >
+          <FaPlus size={32} />
+        </div>
 
+        {/* Existing Animal Cards */}
+        {filteredAnimals.length > 0 ? (
+        filteredAnimals.map(animal => (
+          <AnimalCard
+            key={animal.id}
+            animal={animal}
+            onClick={() => handleAnimalClick(animal)}
+          />
+        ))
+      ) : (
+        <p>No animals available.</p>
+      )}
+      </div>
       {/* Popup for Editing/Deleting Animals */}
       {selectedAnimal && (
         <Popup
@@ -249,6 +271,13 @@ const AnimalsTab = () => {
           onSave={handleSaveAnimal}
           onDelete={handleDeleteAnimal}
           mode="manage" // This makes it show edit and delete buttons instead of the adopt button
+        />
+      )}
+      {isAddPopupOpen && (
+        <AddAnimalPopup
+          isOpen={isAddPopupOpen}
+          onClose={handleCloseAddPopup}
+          setAnimals={setAnimals} // Function to update the animal list after adding
         />
       )}
       {toastMessage && <Toast message={toastMessage} onClose={closeToast} />}

@@ -1,0 +1,85 @@
+
+.calendar-container {
+    width: 100%; 
+    max-width: 11200px; 
+    margin: 0 auto; 
+    padding: 20px; 
+    border-radius: 10px; 
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); 
+    background-color: #FFFBF2;
+  }
+  
+  /* Style for the calendar */
+  .custom-calendar {
+    width: 100%;
+    border: none; /* Remove default border */
+    background-color: #FFFBF2;
+  }
+  
+  /* Style for the month buttons */
+.custom-calendar button {
+    background-color: #D8AE7E; /* Statement color for month buttons */
+    color: white; /* White text color */
+    border: none; /* Remove border */
+    border-radius: 5px; /* Round corners */
+    padding: 10px; /* Add padding */
+  }
+
+  /* Style for the date tiles */
+.custom-calendar .react-calendar__tile {
+    border-radius: 8px; /* Round corners for each tile */
+    padding: 10px; /* Add padding inside tiles */
+    transition: background-color 0.3s; /* Smooth background transition */
+  }
+  
+  /* Change background color on hover for tiles */
+  .custom-calendar .react-calendar__tile:hover {
+    background-color: #E2D2B0; /* Lighten the background on hover */
+  }
+  
+  /* Style for the active date */
+  .custom-calendar .react-calendar__tile--active {
+    background-color: #B29A70; /* Different color for active tile */
+    color: white; /* White text for active date */
+  }
+  
+  .custom-calendar .react-calendar__tile {
+    background: #fdfdfd;
+    color: #333;
+    font-weight: bold;
+    border-radius: 8px;
+    transition: all 0.3s;
+    margin: 5px;
+    padding: 10px;
+  }
+  
+  .custom-calendar .react-calendar__tile:hover {
+    background-color: #D8AE7E;
+    color: white;
+    transform: translateY(-2px);
+    cursor: pointer;
+  }
+  
+  .custom-calendar .react-calendar__tile--now {
+    background: #FFFBF2;
+    border: 1px solid #D8AE7E;
+  }
+  
+  .custom-calendar .react-calendar__tile--active {
+    background-color: hsl(36, 68%, 42%);
+    color: white;
+  }
+  
+  .custom-calendar .react-calendar__navigation button {
+    color: #333;
+    background-color: #D8AE7E;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 8px;
+    margin: 0 5px;
+  }
+  
+  .custom-calendar .react-calendar__navigation button:hover {
+    background-color: hsl(0, 0%, 16%);
+    color: white;
+  }
