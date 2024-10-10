@@ -15,11 +15,9 @@ const AddAnimalPopup = ({ isOpen, onClose, setAnimals }) => {
   const [image, setImage] = useState(null);
   const [uploading, setUploading] = useState(false);
 
-  // AWS S3 Configuration
+  // AWS S3 Configuration with hardcoded credentials
   const s3 = new AWS.S3({
-    accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY,
-    region: process.env.REACT_APP_AWS_REGION,
+    
   });
 
   const handleImageUpload = (e) => {
@@ -32,7 +30,7 @@ const AddAnimalPopup = ({ isOpen, onClose, setAnimals }) => {
       Key: `${animalName}.jpg`, // Image name in the format of 'AnimalName.jpg'
       Body: file,
       ContentType: file.type,
-      ACL: 'public-read',
+      // Remove ACL line as per the previous guidance
     };
   
     try {
@@ -50,9 +48,9 @@ const AddAnimalPopup = ({ isOpen, onClose, setAnimals }) => {
     
     try {
       // Step 1: Upload image to S3
-      const imageUrl = await uploadImageToS3(name);
+      const imageUrl = await uploadImageToS3(image, name);
 
-      // Step 2: Prepare the animal object (categories can be left empty)
+      // Step 2: Prepare the animal object
       const newAnimal = {
         name,
         species,
