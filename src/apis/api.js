@@ -200,6 +200,26 @@ export const addCategory = async (category) => {
   }
 };
 
+export const setVolunteerInformation = async (adopterInfo) => {
+    try {
+        const response = await api.post('/volunteer-info', adopterInfo);
+        return response.data;
+    } catch (error) {
+        console.error('Error submitting adoupter:', error);
+        return [];
+    }
+};
+
+export const setVolunteerInformation = async (adopterInfo) => {
+    try {
+        const response = await api.post('/volunteer-info', adopterInfo);
+        return response.data;
+    } catch (error) {
+        console.error('Error submitting adoupter:', error);
+        return [];
+    }
+};
+
 // Add booking (if needed)
 export const addBooking = async (booking) => {
   try {
@@ -230,6 +250,29 @@ export const deleteBooking = async (bookingId) => {
   } catch (error) {
       console.error(`Error deleting booking with ID ${bookingId}:`, error);
       return null; // Return null on error
+  }
+};
+
+export const getVolunteerValid = async () => {
+    try {
+        const response = await api.get('/volunteer-valid');
+        return response.data;
+    } catch (error) {
+        console.error('Error getting valid check', error);
+        return [];
+    }
+};
+
+export const bookVolunteer = async (date) => {
+    try {
+        const response = await api.get('/booking/volunteer');
+        return response.data;
+    } catch (error) {
+        console.error('Error getting valid check', error);
+        return [];
+    }
+};
+
   }
 };
 

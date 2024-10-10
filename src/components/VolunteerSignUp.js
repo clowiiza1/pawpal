@@ -1,146 +1,158 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faEnvelope, faHome, faCalendar } from '@fortawesome/free-solid-svg-icons';
+import { setVolunteerInformation } from '../apis/api'; // Adjust the import based on your API
 
 const VolunteerSignUp = ({ isOpen, onClose }) => {
-  const [name, setName] = useState('');
-  const [address, setAddress] = useState('');
-  const [email, setEmail] = useState('');
-  const [date, setDate] = useState(''); // State for the selected date
-  const [isSubmitted, setIsSubmitted] = useState(false); // State to control confirmation message
-  const navigate = useNavigate(); // Use useNavigate hook for navigation
+  const [preferredRoles, setPreferredRoles] = useState('');
+  const [volunteerHours, setVolunteerHours] = useState('');
+  const [emergencyContactName, setEmergencyContactName] = useState('');
+  const [emergencyContactNumber, setEmergencyContactNumber] = useState('');
+  const [errors, setErrors] = useState({});
 
-  if (!isOpen) return null; // Only render when the popup is open
+  if (!isOpen) return null; // Don't render if the popup is closed
+
+  const validateForm = () => {
+    const newErrors = {};
+    if (!preferredRoles) {
+      newErrors.preferredRoles = 'Please select your preferred roles';
+    }
+    if (!volunteerHours || volunteerHours < 0) {
+      newErrors.volunteerHours = 'Please enter valid volunteer hours';
+    }
+    if (!emergencyContactName) {
+      newErrors.emergencyContactName = 'Please enter the emergency contact name';
+    }
+    if (!emergencyContactNumber) {
+      newErrors.emergencyContactNumber = 'Please enter the emergency contact number';
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Here, you can handle the submission of the volunteer details
-    const volunteerDetails = { name, address, email, date }; // Include date
-    console.log('Volunteer Details:', volunteerDetails);
-    
-    // Set the submission state to true to show confirmation message
-    setIsSubmitted(true);
-  };
+    if (validateForm()) {
+      const adopterInfo = {
+        preferredRoles,
+        volunteerHours,
+        emergencyContactName,
+        emergencyContactNumber,
+      };
 
-  const handleCloseConfirmation = () => {
-    setIsSubmitted(false); // Reset the confirmation state
-    onClose(); // Close the popup
+      try {
+        const response = await setVolunteerInformation(adopterInfo);
+        if (response) {
+          alert('Information submitted successfully!'); // Adjust as needed
+          onClose(); // Close the popup after submission
+        } else {
+          alert('Failed to submit information. Please try again.');
+        }
+      } catch (error) {
+        console.error('Error in handleSubmit:', error);
+        alert('An error occurred. Please try again later.');
+      }
+    }
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-      <div className="bg-pr p-8 rounded-lg shadow-lg w-3/4 max-w-5xl flex relative">
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+      <div className="max-w-lg w-full bg-sc rounded-lg shadow-md p-6 relative">
         {/* Close Button */}
         <button
-          onClick={handleCloseConfirmation}
+          onClick={onClose}
           className="absolute top-4 right-4 w-10 h-10 bg-red-600 rounded-full flex items-center justify-center text-white hover:bg-red-700 transition duration-200 text-2xl"
           aria-label="Close"
         >
           &times; {/* This represents the close icon (×) */}
         </button>
-
-        {/* Confirmation Message */}
-        {isSubmitted ? (
-          <div className="w-full p-6 bg-pr rounded-lg flex flex-col">
-            <h3 className="text-3xl font-bold mb-4">Thank You for Signing Up!</h3>
-            <p className="mb-4">You have chosen to volunteer on: <strong>{date}</strong></p>
-            <button
-              onClick={handleCloseConfirmation}
-              className="px-6 py-3 mt-4 font-poppins text-m rounded-lg bg-st text-pr shadow-lg hover:bg-st transition duration-300"
+        <h1 className="text-3xl font-semibold text-pr mb-4 text-center">Volunteer Sign Up</h1>
+        <p className="text-pr mb-6 text-center">
+          Please fill in the fields below to sign up as a volunteer.
+        </p>
+        <form onSubmit={handleSubmit}>
+          {/* Preferred Roles Dropdown */}
+          <div className="mb-4">
+            <label htmlFor="preferredRoles" className="block text-pr font-semibold mb-2">
+              Preferred Roles
+              <span className="ml-2 text-st" title="Select your preferred roles for volunteering.">?</span>
+            </label>
+            <select
+              id="preferredRoles"
+              value={preferredRoles}
+              required
+              onChange={(e) => setPreferredRoles(e.target.value)}
+              className={`w-full p-3 border ${errors.preferredRoles ? 'border-red-500' : 'border-st'} rounded-lg focus:outline-none focus:ring-2 text-black focus:ring-sc`}
             >
-              Close
-            </button>
+              <option value="">Preferred Role</option>
+              <option value="Provide general care">Provide general care</option>
+              <option value="Take our dogs for walks">Take our dogs for walks</option>
+              <option value="Write creative bios">Write creative bios</option>
+              <option value="Photograph our animals">Photograph our animals</option>
+            </select>
+            {errors.preferredRoles && <p className="text-red-500 text-sm mt-1">{errors.preferredRoles}</p>}
           </div>
-        ) : (
-          /* Volunteer Sign Up Form */
-          <div className="w-full p-6 bg-pr rounded-lg flex flex-col">
-            <h3 className="text-3xl font-bold mb-4">Volunteer Sign Up</h3>
-            <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
-              {/* Name Field */}
-              <div className="flex flex-col">
-                <label className="font-semibold mb-1" htmlFor="name">
-                  Please provide your full name:
-                </label>
-                <div className="flex items-center">
-                  <FontAwesomeIcon icon={faUser} className="mr-2 text-black" />
-                  <input
-                    type="text"
-                    id="name" // Added id for accessibility
-                    placeholder="Your name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                    className="flex-1 px-4 py-2 rounded-lg border border-gray-300"
-                  />
-                </div>
-              </div>
 
-              {/* Address Field */}
-              <div className="flex flex-col">
-                <label className="font-semibold mb-1" htmlFor="address">
-                  Please enter your home address:
-                </label>
-                <div className="flex items-center">
-                  <FontAwesomeIcon icon={faHome} className="mr-2 text-black" />
-                  <input
-                    type="text"
-                    id="address" // Added id for accessibility
-                    placeholder="Your address"
-                    value={address}
-                    onChange={(e) => setAddress(e.target.value)}
-                    required
-                    className="flex-1 px-4 py-2 rounded-lg border border-gray-300"
-                  />
-                </div>
-              </div>
-
-              {/* Email Field */}
-              <div className="flex flex-col">
-                <label className="font-semibold mb-1" htmlFor="email">
-                  Please enter your email address:
-                </label>
-                <div className="flex items-center">
-                  <FontAwesomeIcon icon={faEnvelope} className="mr-2 text-black" />
-                  <input
-                    type="email"
-                    id="email" // Added id for accessibility
-                    placeholder="Your email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    className="flex-1 px-4 py-2 rounded-lg border border-gray-300"
-                  />
-                </div>
-              </div>
-
-              {/* Date Picker Field */}
-              <div className="flex flex-col">
-                <label className="font-semibold mb-1" htmlFor="date">
-                  Pick a day you would like to volunteer:
-                </label>
-                <div className="flex items-center">
-                  <FontAwesomeIcon icon={faCalendar} className="mr-2 text-black" />
-                  <input
-                    type="date"
-                    id="date" // Added id for accessibility
-                    value={date}
-                    onChange={(e) => setDate(e.target.value)}
-                    required
-                    className="flex-1 px-4 py-2 rounded-lg border border-gray-300"
-                  />
-                </div>
-              </div>
-              <div><p className = "font-semibold text-black">Volunteering hours are from 10 am to 1 pm, Monday to Saturday</p></div>
-              <button
-                type="submit"
-                className="px-6 py-3 mt-4 font-poppins text-m rounded-lg bg-st text-pr shadow-lg hover:bg-st transition duration-300"
-              >
-                Sign Up
-              </button>
-            </form>
+          {/* Volunteer Hours Input */}
+          <div className="mb-4">
+            <label htmlFor="volunteerHours" className="block text-pr font-semibold mb-2">
+              Volunteer Hours
+              <span className="ml-2 text-st" title="Enter the number of volunteer hours you can commit.">?</span>
+            </label>
+            <input
+              type="number"
+              id="volunteerHours"
+              value={volunteerHours}
+              required
+              onChange={(e) => setVolunteerHours(e.target.value)}
+              className={`w-full p-3 border ${errors.volunteerHours ? 'border-red-500' : 'border-st'} rounded-lg focus:outline-none focus:ring-2 text-black focus:ring-sc`}
+              placeholder="Please enter the number of volunteer hours"
+            />
+            {errors.volunteerHours && <p className="text-red-500 text-sm mt-1">{errors.volunteerHours}</p>}
           </div>
-        )}
+
+          {/* Emergency Contact Name Input */}
+          <div className="mb-4">
+            <label htmlFor="emergencyContactName" className="block text-pr font-semibold mb-2">
+              Emergency Contact Name
+              <span className="ml-2 text-st" title="Enter the name of your emergency contact.">?</span>
+            </label>
+            <input
+              type="text"
+              id="emergencyContactName"
+              value={emergencyContactName}
+              required
+              onChange={(e) => setEmergencyContactName(e.target.value)}
+              className={`w-full p-3 border ${errors.emergencyContactName ? 'border-red-500' : 'border-st'} rounded-lg focus:outline-none focus:ring-2 text-black focus:ring-sc`}
+              placeholder="Please enter the emergency contact name"
+            />
+            {errors.emergencyContactName && <p className="text-red-500 text-sm mt-1">{errors.emergencyContactName}</p>}
+          </div>
+
+          {/* Emergency Contact Number Input */}
+          <div className="mb-4">
+            <label htmlFor="emergencyContactNumber" className="block text-pr font-semibold mb-2">
+              Emergency Contact Number
+              <span className="ml-2 text-st" title="Enter the phone number of your emergency contact.">?</span>
+            </label>
+            <input
+              type="text"
+              id="emergencyContactNumber"
+              value={emergencyContactNumber}
+              required
+              onChange={(e) => setEmergencyContactNumber(e.target.value)}
+              className={`w-full p-3 border ${errors.emergencyContactNumber ? 'border-red-500' : 'border-st'} rounded-lg focus:outline-none focus:ring-2 text-black focus:ring-sc`}
+              placeholder="Please enter the emergency contact number"
+            />
+            {errors.emergencyContactNumber && <p className="text-red-500 text-sm mt-1">{errors.emergencyContactNumber}</p>}
+          </div>
+
+          {/* Submit Button */}
+          <button
+            type="submit"
+            className="w-full p-3 mt-4 bg-st text-white font-semibold rounded-lg shadow hover:bg-br transition duration-200"
+          >
+            Submit Information
+          </button>
+        </form>
       </div>
     </div>
   );

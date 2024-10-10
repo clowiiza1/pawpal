@@ -33,6 +33,7 @@ const AdopterInfo = () => {
     e.preventDefault();
     if (validateForm()) {
       console.log(animalId);
+    
   
       // Prepare the adopter info to be sent
       const adopterInfo = {

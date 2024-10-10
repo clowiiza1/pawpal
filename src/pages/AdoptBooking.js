@@ -6,20 +6,23 @@ import dogCare from './dogcare.jpg';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSyringe, faNeuter } from '@fortawesome/free-solid-svg-icons';
 import dogIcon from './loginformicon.png';
+import Calendar from 'react-calendar'; // Import the Calendar component
+import 'react-calendar/dist/Calendar.css'; // Import the calendar styles
+import './CalendarStyles.css'; // Import custom CSS for calendar styling
 
 function AdoptBooking() {
   const navigate = useNavigate();
   const location = useLocation();
   const { animalId } = location.state || {}; // Get the animalId from location state
   const [selectedAnimal, setSelectedAnimal] = useState(null); // Changed initial value to null
-  const [selectedDate, setSelectedDate] = useState('');
+  const [selectedDate, setSelectedDate] = useState(new Date()); // Set initial date to today
   const [selectedSlot, setSelectedSlot] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   // Define the handleDateChange function
-  const handleDateChange = (event) => {
-    setSelectedDate(event.target.value);
+  const handleDateChange = (date) => {
+    setSelectedDate(date);
     setError('');
   };
 
@@ -145,20 +148,27 @@ function AdoptBooking() {
               {selectedAnimal ? selectedAnimal.name : 'an animal'}
             </h1>
 
-            {/* Date Selection Input */}
-            <div className="w-full mb-4">
-              <input
-                id="datepicker-actions"
-                type="date"
+            {/* Calendar Section */}
+            <div className="shadow-lg p-4 rounded-lg w-full bg-pr calendar-container">
+              <Calendar
+                onChange={handleDateChange} // Update the selected date
                 value={selectedDate}
-                onChange={handleDateChange}
-                className="bg-white border border-st text-sc rounded-lg focus:ring-st focus:border-sc block w-full p-2.5"
-                placeholder="Select date"
+                minDate={new Date()} // Prevent past dates
+                className="custom-calendar bg-pr w-full" // Custom class for styling
               />
+              {/* New "Book {date}" button */}
+              <div className="text-center mt-4">
+                <button
+                  className="bg-st hover:bg-pr hover:text-sc text-pr font-bold py-3 px-8 rounded-lg shadow-lg"
+                  onClick={() => console.log(`Book ${selectedDate.toDateString()}`)} // Open the confirmation popup on click
+                >
+                  Book {selectedDate.toDateString()}
+                </button>
+              </div>
             </div>
 
             {/* Time Slot Selection */}
-            <div className="w-full mb-4">
+            <div className="w-full mb-4 pt-6">
               <select
                 id="time-slot-selector"
                 value={selectedSlot}
