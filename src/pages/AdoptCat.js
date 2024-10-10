@@ -135,6 +135,7 @@ const AdoptCat = () => {
           isOpen={selectedAnimal !== null} // Open popup if an animal is selected
           onClose={handleClosePopup} // Close the popup
           animal={selectedAnimal} // Pass the selected animal to the popup
+          mode="adopt"
         />
       </div>
     </div>

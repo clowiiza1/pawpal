@@ -134,6 +134,7 @@ const AdoptDog = () => {
           isOpen={selectedDog !== null}
           onClose={handleClosePopup}
           animal={selectedDog}
+          mode="adopt"
         />
       </div>
     </div>

@@ -28,7 +28,7 @@ const SignUp = ({ setIsLoggedIn }) => {
   };
 
   const handleGoBack = () => {
-    navigate('/'); // Redirect to the main page
+    navigate('/login'); // Redirect to the main page
   };
 
   return (
@@ -38,7 +38,7 @@ const SignUp = ({ setIsLoggedIn }) => {
         onClick={handleGoBack}
         className="absolute top-12 left-12 w-60 bg-st text-sc font-black py-2 rounded-md hover:bg-sc hover:text-pr"
       >
-        &lt; Back to homepage
+        &lt; Back to login
       </button>
       
       <div className="max-w-4xl w-full">

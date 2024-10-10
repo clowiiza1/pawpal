@@ -1,26 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import AnimalCard from './AnimalCard';
-import Popup from './Popup'; // Import the Popup component
-import { getAnimals, updateAnimal, deleteAnimal } from '../apis/api'; 
-import { FaSearch, FaSortAlphaDown, FaSortAlphaUp } from 'react-icons/fa';
+import Popup from './TraitsPopup'; // Import the Popup component
 import Toast from './Toast'; 
+import { getAnimals, getCategoriesByAnimalId, getCategoriesBySpecies, updateAnimalCategories  } from '../apis/api'; 
+import { FaSearch, FaSortAlphaDown, FaSortAlphaUp } from 'react-icons/fa';
 
-const AnimalsTab = () => {
+const AnimalTraitsTab = () => {
   const [animals, setAnimals] = useState([]);
   const [filteredAnimals, setFilteredAnimals] = useState([]);
   const [selectedAnimal, setSelectedAnimal] = useState(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [allCategories, setAllCategories] = useState([]);
+  const [animalCategories, setAnimalCategories] = useState([]);
   const [loading, setLoading] = useState(true); // To track loading state
   const [error, setError] = useState(null);
-  const [filter, setFilter] = useState('all'); // Filter for animal species
-  const [statusFilter, setStatusFilter] = useState('all'); // Filter for animal status
+  const [filter, setFilter] = useState('all'); // Filter for species
   const [searchQuery, setSearchQuery] = useState(''); // Search input
   const [sortOrder, setSortOrder] = useState('asc'); // Sorting order for animal names
   const [toastMessage, setToastMessage] = useState('');
+
   useEffect(() => {
     fetchAnimals();
   }, []); // Fetch animals only on component mount
 
+  useEffect(() => {
+    applyFilters();
+  }, [filter, searchQuery, animals, sortOrder]); 
   // Fetch animals
   const fetchAnimals = async () => {
     try {
@@ -39,7 +44,7 @@ const AnimalsTab = () => {
   // Apply filters and search
   useEffect(() => {
     applyFilters();
-  }, [filter, statusFilter, searchQuery, sortOrder, animals]);  // Run on filter, status, search query, or animals change
+  }, [filter, searchQuery, animals]); // Run on filter, search query, or animals change
 
   const applyFilters = () => {
     let updatedAnimals = animals;
@@ -47,11 +52,6 @@ const AnimalsTab = () => {
     // Apply species filter
     if (filter !== 'all') {
       updatedAnimals = updatedAnimals.filter(animal => animal.species.toLowerCase() === filter.toLowerCase());
-    }
-
-    // Apply status filter
-    if (statusFilter !== 'all') {
-      updatedAnimals = updatedAnimals.filter(animal => animal.status.toLowerCase() === statusFilter.toLowerCase());
     }
 
     // Apply search filter
@@ -63,22 +63,15 @@ const AnimalsTab = () => {
 
     // Apply sorting using localeCompare for string comparison
     updatedAnimals.sort((a, b) => {
-      return sortOrder === 'asc'
+      return sortOrder === 'desc'
         ? a.name.localeCompare(b.name)
         : b.name.localeCompare(a.name);
     });
 
-    setFilteredAnimals(updatedAnimals);
-  };
+    // Log sorted animals for debugging
+    console.log('Sorted Animals:', updatedAnimals);
 
-  // Get the count of animals per filter category
-  const getStatusCounts = () => {
-    const statusCounts = {
-      all: animals.length,
-      available: animals.filter(animal => animal.status.toLowerCase() === 'available').length,
-      adopted: animals.filter(animal => animal.status.toLowerCase() === 'adopted').length,
-    };
-    return statusCounts;
+    setFilteredAnimals(updatedAnimals);
   };
 
   const getSpeciesCounts = () => {
@@ -90,13 +83,22 @@ const AnimalsTab = () => {
     return speciesCounts;
   };
 
-  const statusCounts = getStatusCounts();
   const speciesCounts = getSpeciesCounts();
 
   // Function to open the popup when an animal card is clicked
-  const handleAnimalClick = (animal) => {
+  const handleAnimalClick = async (animal) => {
     setSelectedAnimal(animal);
-    setIsPopupOpen(true);
+    setIsPopupOpen(true); // Open popup
+
+    try {
+      const animalCategories = await getCategoriesByAnimalId(animal.id);
+      setAnimalCategories(animalCategories.map(category => category.id)); // Extract category IDs
+    } catch (error) {
+      console.error('Error fetching animal categories:', error);
+    }
+    
+    const categoriesBySpecies = await getCategoriesBySpecies(animal.species);
+    setAllCategories(categoriesBySpecies);
   };
 
   // Close the popup
@@ -105,60 +107,29 @@ const AnimalsTab = () => {
     setSelectedAnimal(null);
   };
 
+  // Toggle categories for the selected animal
+  const handleCategoryToggle = (categoryId) => {
+    setAnimalCategories((prevCategories) =>
+      prevCategories.includes(categoryId)
+        ? prevCategories.filter((id) => id !== categoryId)
+        : [...prevCategories, categoryId]
+    );
+  };
+
+  // Handle saving edited categories (Currently placeholder)
+  const handleSaveCategories = async () => {
+    try {
+      await updateAnimalCategories(selectedAnimal.id, animalCategories);
+      setToastMessage('Animal categories updated successfully!'); // Set success message
+      handleClosePopup();
+    } catch (error) {
+      console.error('Error updating animal categories:', error);
+    }
+  };
   const closeToast = () => {
     setToastMessage(''); // Clear the toast message after 3 seconds
   };
-  // Handle saving edits to an animal
-  const handleSaveAnimal = async (updatedAnimal) => {
-    try {
-      // Create a payload excluding the categories
-      const formattedAnimal = {
-        id: updatedAnimal.id,
-        name: updatedAnimal.name,
-        species: updatedAnimal.species,
-        breed: updatedAnimal.breed,
-        age: updatedAnimal.age,
-        arrivalDate: updatedAnimal.arrivalDate, // Ensure it's properly formatted
-        status: updatedAnimal.status,
-        gender: updatedAnimal.gender,
-        weight: updatedAnimal.weight,
-        description: updatedAnimal.description,
-        imageUrl: updatedAnimal.imageUrl,
-        vaccinated: updatedAnimal.vaccinated,
-        sterile: updatedAnimal.sterile,
-        // Exclude categories here to avoid overwriting them
-      };
-  
-      const savedAnimal = await updateAnimal(formattedAnimal);
-      setAnimals((prevAnimals) =>
-        prevAnimals.map((animal) => (animal.id === savedAnimal.id ? savedAnimal : animal))
-      );
-      applyFilters();
-      handleClosePopup();
-      setToastMessage('Animal details updated successfully!');
-    } catch (error) {
-      console.error('Error saving animal:', error);
-    }
-  };
-  
-  
 
-  // Handle deleting an animal
-  const handleDeleteAnimal = async () => {
-    try {
-      // Call the API to delete the animal by its ID
-      await deleteAnimal(selectedAnimal.id);
-  
-      // Remove the deleted animal from the state
-      setAnimals((prevAnimals) => prevAnimals.filter((animal) => animal.id !== selectedAnimal.id));
-      applyFilters(); // Apply filters again to update the displayed list
-      handleClosePopup();
-      setToastMessage('Animal deleted successfully!');
-    } catch (error) {
-      console.error('Error deleting animal:', error);
-      setToastMessage('Failed to delete animal. Please try again.');
-    }
-  };
 
   if (loading) {
     return <p>Loading animals...</p>;
@@ -171,7 +142,7 @@ const AnimalsTab = () => {
 
   return (
     <div className="">
-      <h2 className="text-2xl font-bold text-sc mb-4">Animals</h2>
+      <h2 className="text-2xl font-bold text-sc mb-4">Manage the Animal's Traits</h2>
       
       <div className="flex space-x-4 mb-6 items-center">
         {/* Filter by Species */}
@@ -194,20 +165,6 @@ const AnimalsTab = () => {
           Cats ({speciesCounts.cat})
         </button>
 
-        {/* Filter by Status */}
-        <button
-          className={`px-2 py-2 rounded-lg ${statusFilter === 'available' ? 'bg-sc text-pr' : 'bg-pr text-sc'}`}
-          onClick={() => setStatusFilter('available')}
-        >
-          Available Animals ({statusCounts.available})
-        </button>
-        <button
-          className={`px-2 py-2 rounded-lg ${statusFilter === 'adopted' ? 'bg-sc text-pr' : 'bg-pr text-sc'}`}
-          onClick={() => setStatusFilter('adopted')}
-        >
-          Adopted Animals ({statusCounts.adopted})
-        </button>
-
         {/* Search Input */}
         <div className="flex items-center border border-sc rounded-lg">
           <input
@@ -221,7 +178,7 @@ const AnimalsTab = () => {
         </div>
 
         {/* Sort Button */}
-        <button
+       <button
           className="px-2 py-2 bg-sc text-pr rounded-lg hover:bg-st flex items-center"
           onClick={() => setSortOrder(prevOrder => (prevOrder === 'asc' ? 'desc' : 'asc'))}
         >
@@ -233,22 +190,23 @@ const AnimalsTab = () => {
       <div className="grid grid-cols-3 gap-4">
         {filteredAnimals.length > 0 ? (
           filteredAnimals.map((animal) => (
-            <AnimalCard key={animal.id} animal={animal} onClick={handleAnimalClick} />
+            <AnimalCard key={animal.id} animal={animal} onClick={() => handleAnimalClick(animal)} />
           ))
         ) : (
           <p>No animals available.</p>
         )}
       </div>
 
-      {/* Popup for Editing/Deleting Animals */}
+      {/* Popup for Editing Categories */}
       {selectedAnimal && (
         <Popup
           isOpen={isPopupOpen}
           onClose={handleClosePopup}
           animal={selectedAnimal}
-          onSave={handleSaveAnimal}
-          onDelete={handleDeleteAnimal}
-          mode="manage" // This makes it show edit and delete buttons instead of the adopt button
+          allCategories={allCategories}
+          animalCategories={animalCategories}
+          handleCategoryToggle={handleCategoryToggle}
+          handleSaveCategories={handleSaveCategories}
         />
       )}
       {toastMessage && <Toast message={toastMessage} onClose={closeToast} />}
@@ -256,4 +214,4 @@ const AnimalsTab = () => {
   );
 };
 
-export default AnimalsTab;
+export default AnimalTraitsTab;

@@ -153,6 +153,16 @@ export const getCategories = async () => {
   }
 };
 
+export const getCategoriesByAnimalId = async (animalId) => {
+    try {
+        const response = await api.get(`/animals/categories/${animalId}`);
+        return response.data; // Assuming your API returns the category list in response.data
+    } catch (error) {
+        console.error('Error fetching categories:', error);
+        return []; // Return an empty array on error
+    }
+  };
+
 export const deleteCategory = async (categoryId) => {
   try {
       const response = await api.delete(`/categories/${categoryId}`);
@@ -242,3 +252,34 @@ export const getAllUsers = async () => {
       return []; // Return an empty array on error
   }
 };
+
+export const updateAnimalCategories = async (animalId, categoryIds) => {
+    try {
+      const response = await api.put(`/animals/${animalId}/categories`, categoryIds);
+      return response.data;
+    } catch (error) {
+      console.error('Error updating animal categories:', error);
+      throw error;
+    }
+  };
+
+  export const updateAnimal = async (animal) => {
+    try {
+      const response = await api.put('/animals', animal);
+      return response.data; // Return the updated animal
+    } catch (error) {
+      console.error('Error updating animal:', error);
+      throw error;
+    }
+  };
+
+  export const deleteAnimal = async (animalId) => {
+    try {
+      const response = await api.delete(`/animals/${animalId}`);
+      return response.data; // Assuming the API returns a success message or deleted ID in response.data
+    } catch (error) {
+      console.error(`Error deleting animal with ID ${animalId}:`, error);
+      throw error;
+    }
+  };
+  

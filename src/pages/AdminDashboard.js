@@ -5,10 +5,11 @@ import CategoriesTab from '../components/CategoriesTab';
 import BookingsTab from '../components/BookingsTab';
 import ReportsTab from '../components/ReportsTab';
 import AnimalsTab from '../components/AnimalsTab';
+import AnimalTraitsTab from '../components/AnimalTraitsTab';
 import { getUserRoles } from '../apis/api'; // Import the API call
 
 const AdminDashboard = () => {
-  const [activeTab, setActiveTab] = useState('categories'); // Default tab set to categories for demonstration
+  const [activeTab, setActiveTab] = useState('users'); // Default tab set to categories for demonstration
   const navigate = useNavigate(); // Hook to navigate programmatically
 
   useEffect(() => {
@@ -37,7 +38,7 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen mb-2">
       <aside className="w-1/4 h-screen bg-st p-8 flex flex-col rounded-3xl ml-4 mt-4">
         <h1 className="text-2xl text-sc font-bold mb-8 justify-center">Staff Dashboard</h1>
         <ul className="space-y-6">
@@ -75,6 +76,14 @@ const AdminDashboard = () => {
           </li>
           <li>
             <button
+              className={`w-full ${activeTab === 'animaltraits' ? 'bg-sc text-pr' : 'bg-pr text-sc'} py-4 text-lg font-bold rounded-lg shadow-md`}
+              onClick={() => handleTabChange('animaltraits')}
+            >
+             Animal Traits
+            </button>
+          </li>
+          <li>
+            <button
               className={`w-full ${activeTab === 'reports' ? 'bg-sc text-pr' : 'bg-pr text-sc'} py-4 text-lg font-bold rounded-lg shadow-md`}
               onClick={() => handleTabChange('reports')}
             >
@@ -90,6 +99,7 @@ const AdminDashboard = () => {
         {activeTab === 'bookings' && <BookingsTab />}
         {activeTab === 'reports' && <ReportsTab />}
         {activeTab === 'animals' && <AnimalsTab />}
+        {activeTab === 'animaltraits' && <AnimalTraitsTab />}
         {/* Add other tab components here */}
       </main>
     </div>

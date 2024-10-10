@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { login } from '../apis/api'; // Import the login function
-import petsIcon from '../components/LoginForm.jpeg'; // Image for the side
+import catImage from './LoginForm.jpg'; // Image for the side
 
 const LoginForm = ({ setIsLoggedIn }) => {
   const [formData, setFormData] = useState({
@@ -72,12 +72,12 @@ const LoginForm = ({ setIsLoggedIn }) => {
   }, [isLoggingIn]);
 
   return (
-    <div className="flex justify-center items-center min-h-[60vh]">
+    <div className="flex justify-center items-center min-h-[60vh] w-full">
       {/* Updated width settings */}
       <div className="flex w-full max-w-3xl bg-pr shadow-lg rounded-[25px] overflow-hidden">
         {/* Image on the left */}
         <div className="w-1/2 hidden lg:flex items-center">
-          <img src={petsIcon} alt="Login" className="object-cover h-full w-full" />
+          <img src={catImage} alt="Login" className="object-cover h-full w-full" />
         </div>
         {/* Form on the right */}
         <div className="flex flex-col justify-center w-full lg:w-1/2 p-8 bg-st">
