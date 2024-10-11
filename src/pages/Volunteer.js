@@ -152,7 +152,7 @@ const Volunteer = () => {
           Book Your Volunteer Day
         </h2>
         <p className="text-center text-lg mb-4">
-          Choose a date that works best for you.
+          Choose a date that works best for you. Volunteer hours are from 8 am to 2 pm.
         </p>
 
         <div className="flex flex-col items-center lg:flex-row lg:justify-center gap-8">
