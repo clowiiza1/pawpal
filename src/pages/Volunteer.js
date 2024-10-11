@@ -42,7 +42,7 @@ const Volunteer = () => {
       const year = selectedDate.getFullYear();
       const month = String(selectedDate.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed
       const day = String(selectedDate.getDate()).padStart(2, '0');
-      const formattedDate = `${year} ${month} ${day}`; // Format as YYYY-MM-DD
+      const formattedDate = `${year}-${month}-${day}`; // Format as YYYY-MM-DD
   
       const response = await bookVolunteer(formattedDate); // Pass the formatted date directly
       if (response) {
