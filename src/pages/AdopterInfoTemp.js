@@ -19,7 +19,7 @@ const AdopterInfo = () => {
   const validateForm = () => {
     const newErrors = {};
     if (!noAnimals || noAnimals <= 0) {
-      newErrors.noAnimals = 'Please enter a valid number of animals';
+      newErrors.noOfAnimals = 'Please enter a valid number of animals';
     }
     if (!houseType) {
       newErrors.houseType = 'Please select a living environment';
@@ -37,7 +37,7 @@ const AdopterInfo = () => {
   
       // Prepare the adopter info to be sent
       const adopterInfo = {
-        noAnimals,          // Using the state variable directly
+        noOfAnimals: parseInt(noAnimals, 10),      // Using the state variable directly
         houseType,    // Using the state variable directly
         // Add other fields as needed
       };

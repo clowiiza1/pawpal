@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { FaTrash, FaPen, FaPlusCircle, FaFilePdf, FaSortAlphaDown, FaSortAlphaUp, FaBan } from 'react-icons/fa';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-import { getAllUsers, getUserRoles } from '../apis/api'; // Assuming you have the getAllUsers API call
+import { getAllUsers, getUserRoles, deleteUser, updateUser  } from '../apis/api'; // Assuming you have the getAllUsers API call
+import Toast from './Toast';
 
 const UsersTab = () => {
   const [users, setUsers] = useState([]);
   const [filter, setFilter] = useState('all');
+  const [roles, setRoles] = useState([]);
   const [sortOrder, setSortOrder] = useState('asc'); // Sorting order (asc or desc)
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -14,24 +16,31 @@ const UsersTab = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [currentUserRoles, setCurrentUserRoles] = useState(['Admin']); // Assuming the current user is an Admin
   const [hoveredItem, setHoveredItem] = useState(null); // Track hover state
+  const [showToast, setShowToast] = useState(false); // Manage toast visibility
+  const [toastMessage, setToastMessage] = useState('');
+  
+  const staticRoles = [
+    { id: 1, name: 'Admin' },
+    { id: 2, name: 'Staff' },
+    { id: 3, name: 'Volunteer' },
+    { id: 4, name: 'Adopter' }
+  ];
 
   useEffect(() => {
-    const fetchCurrentUserRoles = async () => {
+    const fetchRoles = async () => {
       try {
-        // Example API call to get current user's roles
-        const rolesFromApi = await getUserRoles(); // This returns an array of objects
-  
-        // Extract the "name" property from each role object
-        const roleNames = rolesFromApi.map(role => role.name);
-  
-        // Set the current user roles as an array of role names (e.g., ['Staff', 'Adopter'])
-        setCurrentUserRoles(roleNames);
+        const rolesFromApi = await getUserRoles();
+        setRoles(rolesFromApi);
+        // Assuming current user roles can be fetched or are known
+        // setCurrentUserRoles(['Admin']); // Adjust as needed
       } catch (error) {
-        console.error("Error fetching current user roles:", error);
+        console.error('Error fetching roles:', error);
       }
     };
+
   
-    fetchCurrentUserRoles();
+
+    fetchRoles();
   }, []);
 
   useEffect(() => {
@@ -171,7 +180,15 @@ const UsersTab = () => {
     if (isStaffRestricted(user)) {
       return; // Block Staff from editing Admin or Staff users
     }
-    setSelectedUser(user);
+    // Ensure roles are objects
+    const userWithRolesAsObjects = {
+      ...user,
+      roles: user.roles.map((role) => ({
+        id: role.id,
+        name: role.name,
+      })),
+    };
+    setSelectedUser(userWithRolesAsObjects);
     setShowEditModal(true);
   };
 
@@ -183,17 +200,44 @@ const UsersTab = () => {
     setShowDeleteModal(true);
   };
 
-  const confirmDeleteUser = () => {
-    setUsers(users.filter((user) => user !== selectedUser));
-    setShowDeleteModal(false);
-    setSelectedUser(null);
-  };
+  const confirmDeleteUser = async () => {
+    if (selectedUser) {
+      try {
+        await deleteUser(selectedUser.id);
+        setUsers(users.filter((user) => user.id !== selectedUser.id));
+        setShowDeleteModal(false);
+        setSelectedUser(null);
 
-  const saveEditUser = () => {
-    setUsers(users.map((user) => (user.id === selectedUser.id ? selectedUser : user)));
-    setShowEditModal(false);
-    setSelectedUser(null);
+        // Show success toast
+        setToastMessage('User deleted successfully');
+        setShowToast(true);
+      } catch (error) {
+        console.error('Error deleting user:', error);
+      }
+    }
   };
+  const saveEditUser = async () => {
+    if (selectedUser) {
+      try {
+        // Exclude the username field from the selectedUser object
+        const { username, ...userWithoutUsername } = selectedUser;
+  
+        // Now send the updated user data without the username
+        const updatedUser = await updateUser(userWithoutUsername);
+        
+        // Update the users state with the updated user info
+        setUsers(users.map((user) => (user.id === updatedUser.id ? updatedUser : user)));
+        
+        setShowEditModal(false);
+        setSelectedUser(null);
+        setToastMessage('User updated successfully');
+        setShowToast(true);
+      } catch (error) {
+        console.error('Error updating user:', error);
+      }
+    }
+  };
+  
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -204,12 +248,22 @@ const UsersTab = () => {
   };
 
   const handleRoleChange = (role) => {
-    setSelectedUser((prevUser) => ({
-      ...prevUser,
-      roles: prevUser.roles.includes(role)
-        ? prevUser.roles.filter((r) => r !== role)
-        : [...prevUser.roles, role],
-    }));
+    setSelectedUser((prevUser) => {
+      const roleExists = prevUser.roles.some((userRole) => userRole.id === role.id);
+      if (roleExists) {
+        // Remove the role
+        return {
+          ...prevUser,
+          roles: prevUser.roles.filter((userRole) => userRole.id !== role.id),
+        };
+      } else {
+        // Add the role
+        return {
+          ...prevUser,
+          roles: [...prevUser.roles, role],
+        };
+      }
+    });
   };
 
   return (
@@ -381,7 +435,7 @@ const UsersTab = () => {
                 <input
                   type="text"
                   name="phone"
-                  value={selectedUser.phone}
+                  value={selectedUser.phoneNumber}
                   onChange={handleInputChange}
                   className="border border-st rounded px-2 py-1 text-lg w-3/4"
                 />
@@ -397,16 +451,16 @@ const UsersTab = () => {
                 />
               </div>
               <div className="flex flex-col">
-                <span className="text-lg font-medium text-sc">Roles:</span>
+              <span className="text-lg font-medium text-sc">Roles:</span>
                 <div className="flex space-x-4 text-sc">
-                  {['Staff', 'Adopter', 'Volunteer', 'Admin'].map((role) => (
-                    <label key={role} className="flex items-center space-x-2">
+                  {staticRoles.map((role) => (
+                    <label key={role.id} className="flex items-center space-x-2">
                       <input
                         type="checkbox"
-                        checked={selectedUser.roles.includes(role)}
+                        checked={selectedUser.roles.some((userRole) => userRole.id === role.id)}
                         onChange={() => handleRoleChange(role)}
                       />
-                      <span>{role}</span>
+                      <span>{role.name}</span>
                     </label>
                   ))}
                 </div>
@@ -475,6 +529,8 @@ const UsersTab = () => {
           </div>
         </div>
       )}
+
+{showToast && <Toast message={toastMessage} onClose={() => setShowToast(false)} />}
     </div>
   );
 };

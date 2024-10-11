@@ -4,14 +4,15 @@ import VolunteerSignUp from '../components/VolunteerSignUp'; // Import the Volun
 import Calendar from 'react-calendar'; // Import the react-calendar package
 import 'react-calendar/dist/Calendar.css'; // Import the calendar styles
 import './CalendarStyles.css'; // Import custom CSS for calendar styling
-import { bookVolunteer } from '../apis/api';
-import { getVolunteerValid } from '../apis/api';
+import { bookVolunteer, getVolunteerValid } from '../apis/api';
+import Toast from '../components/Toast';
 
 const Volunteer = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false); // State to manage volunteer sign-up popup visibility
   const [isVolunteerValid, setIsVolunteerValid] = useState(true); // State to hold validation
   const [selectedDate, setSelectedDate] = useState(new Date()); // State to manage selected date
   const [isConfirmationPopupOpen, setIsConfirmationPopupOpen] = useState(false); // State to manage confirmation popup visibility
+  const [toastMessage, setToastMessage] = useState('');
 
   useEffect(() => {
     // Scroll to the top of the page when the component is mounted
@@ -27,79 +28,44 @@ const Volunteer = () => {
   // Function to handle the confirmation button click
   const handleBookClick = async () => {
     if (!isVolunteerValid) {
-      setIsPopupOpen(true); // Open volunteer information popup
+      setIsPopupOpen(true); // Open the volunteer sign-up popup if the user is not valid
     } else {
-      setIsConfirmationPopupOpen(true); // Open confirmation popup
+      setIsConfirmationPopupOpen(true); // Open the confirmation popup if the user is valid
     }
   };
 
   // Function to handle confirmation response
   const handleConfirmationResponse = async (confirm) => {
-    setIsConfirmationPopupOpen(false); // Close confirmation popup
+    setIsConfirmationPopupOpen(false); 
     if (confirm) {
-        const formattedDate = selectedDate.toISOString().split('T')[0]; // Format date to YYYY-MM-DD
-        const token = localStorage.getItem('token'); 
-        const response = await fetch('http://localhost:8080/booking/volunteer', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json, text/plain, */*', // Specify content type as plain text
-            'Authorization': `Bearer ${token}`,
-
-          },
-          body: formattedDate, // Send formatted date as body
-        });
-        
-        if (response.ok) {
-          alert(`You have successfully booked for ${formattedDate}`);
-        } else {
-          alert('Failed to book your date. Please try again.');
-        }
+      // Manually format the date to avoid time zone issues
+      const year = selectedDate.getFullYear();
+      const month = String(selectedDate.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed
+      const day = String(selectedDate.getDate()).padStart(2, '0');
+      const formattedDate = `${year}-${month}-${day}`; // Format as YYYY-MM-DD
+  
+      const response = await bookVolunteer(formattedDate); // Pass the formatted date directly
+      if (response) {
+        setToastMessage(`You have successfully booked for ${formattedDate}`);
+      } else {
+        setToastMessage('Failed to book your date. Please try again.');
+      }
     }
+  };
+
+  const handleSignUpSuccess = () => {
+    fetchVolunteerValidation(); // Recheck the validation status
   };
 
   return (
     <div className="p-8 max-w-7xl mx-auto">
       {/* Book Volunteer Section with Calendar */}
-      <div className="mb-12">
-        <h2 className="text-3xl font-bold text-center mb-4">
-          Book Your Volunteer Day
-        </h2>
-        <p className="text-center text-lg mb-4">
-          Choose a date that works best for you.
-        </p>
-
-        <div className="flex flex-col items-center lg:flex-row lg:justify-center gap-8">
-          {/* Calendar Section */}
-          <div className="shadow-lg p-4 rounded-lg w-full bg-white calendar-container">
-            <Calendar
-              onChange={setSelectedDate} // Update the selected date
-              value={selectedDate}
-              minDate={new Date()} // Prevent past dates
-              className="custom-calendar" // Custom class for styling
-            />
-            {/* New "Book {date}" button */}
-            <div className="text-center mt-4">
-              <button
-                className="bg-st hover:bg-pr hover:text-sc text-pr font-bold py-3 px-8 rounded-lg shadow-lg"
-                onClick={handleBookClick} // Open the confirmation popup on click
-              >
-                Book {selectedDate.toDateString()}
-              </button>
-            </div>
-          </div>
-
-          {/* Become a Volunteer Button */}
-          <div className="flex flex-col justify-center">
-            <button
-              className="bg-st hover:bg-pr hover:text-sc text-pr font-bold py-3 px-8 rounded-lg shadow-lg"
-              onClick={() => setIsPopupOpen(true)} // Open the volunteer sign-up popup on click
-            >
-              Become a Volunteer!
-            </button>
-          </div>
+      {toastMessage && (
+        <div className="bg-green-500 text-white p-4 mb-4 rounded-lg">
+          {toastMessage}
         </div>
-      </div>
+      )}
+      
 
       {/* Main Heading */}
       <h2 className="text-5xl font-bold text-center mb-8">
@@ -116,7 +82,7 @@ const Volunteer = () => {
             style={{
               boxShadow: '20px 20px 0px #D8AE7E' // Statement color
             }}
-            alt=""
+            alt="Volunteer walking dogs"
           />
         </div>
 
@@ -124,7 +90,7 @@ const Volunteer = () => {
         <div className="w-full md:w-1/2 flex flex-col items-start pl-4">
           <h3 className="text-xl font-semibold text-sc mb-4">Volunteer your time</h3>
           <p className="text-black mb-4 text-justify">
-            Volunteering at the SPCA is a wonderful way to make a meaningful difference in the lives of animals in need. By offering your time and skills, you directly contribute to the well-being and happiness of our rescue animals. Whether it’s providing general care like feeding, washing, and grooming, or taking our dogs for walks to help socialize them and give them the love and attention they deserve, your efforts have a lasting impact. Volunteers can also help by writing creative bios for our website and social media channels, bringing out each animal's unique personality to attract potential adopters. If you have a passion for photography, capturing photos of our animals can showcase their charm and increase their chances of finding a forever home. No matter your role, your contribution as a volunteer will help us continue our mission of providing safe, loving environments for all our animals.
+          Volunteering at the SPCA is a wonderful way to make a meaningful difference in the lives of animals in need. By offering your time and skills, you directly contribute to the well-being and happiness of our rescue animals. Whether it’s providing general care like feeding, washing, and grooming, or taking our dogs for walks to help socialize them and give them the love and attention they deserve, your efforts have a lasting impact. Volunteers can also help by writing creative bios for our website and social media channels, bringing out each animal's unique personality to attract potential adopters. If you have a passion for photography, capturing photos of our animals can showcase their charm and increase their chances of finding a forever home. No matter your role, your contribution as a volunteer will help us continue our mission of providing safe, loving environments for all our animals.
           </p>
         </div>
       </div>
@@ -181,11 +147,39 @@ const Volunteer = () => {
           </div>
         </div>
       </div>
+      <div className="mb-12 p-4">
+        <h2 className="text-3xl font-bold text-center  p-4">
+          Book Your Volunteer Day
+        </h2>
+        <p className="text-center text-lg mb-4">
+          Choose a date that works best for you.
+        </p>
+
+        <div className="flex flex-col items-center lg:flex-row lg:justify-center gap-8">
+          <div className="shadow-lg p-4 rounded-lg w-full bg-white calendar-container">
+            <Calendar
+              onChange={setSelectedDate} 
+              value={selectedDate}
+              minDate={new Date()} 
+              className="custom-calendar"
+            />
+            <div className="text-center mt-4">
+              <button
+                className="bg-st hover:bg-pr hover:text-sc text-pr font-bold py-3 px-8 rounded-lg shadow-lg"
+                onClick={handleBookClick}
+              >
+                Book {selectedDate.toDateString()}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Volunteer Sign Up Popup */}
       <VolunteerSignUp 
         isOpen={isPopupOpen} 
-        onClose={() => setIsPopupOpen(false)} // Close the popup
+        onClose={() => setIsPopupOpen(false)} 
+        onSignUpSuccess={handleSignUpSuccess} // Pass this to revalidate after sign-up
       />
 
       {/* Confirmation Popup */}
@@ -197,13 +191,13 @@ const Volunteer = () => {
             <div className="flex justify-center">
               <button 
                 className="bg-green-500 text-white py-2 px-4 rounded-lg mr-2"
-                onClick={() => handleConfirmationResponse(true)} // Confirm booking
+                onClick={() => handleConfirmationResponse(true)} 
               >
                 Yes
               </button>
               <button 
                 className="bg-red-500 text-white py-2 px-4 rounded-lg" 
-                onClick={() => handleConfirmationResponse(false)} // Cancel booking
+                onClick={() => handleConfirmationResponse(false)} 
               >
                 No
               </button>

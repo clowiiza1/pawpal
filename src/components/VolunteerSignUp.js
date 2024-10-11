@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { setVolunteerInformation } from '../apis/api'; // Adjust the import based on your API
+import Toast from './Toast'; 
 
-const VolunteerSignUp = ({ isOpen, onClose }) => {
+const VolunteerSignUp = ({ isOpen, onClose, onSignUpSuccess }) => {
   const [preferredRoles, setPreferredRoles] = useState('');
-  const [volunteerHours, setVolunteerHours] = useState('');
   const [emergencyContactName, setEmergencyContactName] = useState('');
   const [emergencyContactNumber, setEmergencyContactNumber] = useState('');
   const [errors, setErrors] = useState({});
+  const [showToast, setShowToast] = useState(false); // State to manage toast visibility
+  const [toastMessage, setToastMessage] = useState('');
 
   if (!isOpen) return null; // Don't render if the popup is closed
 
@@ -14,9 +16,6 @@ const VolunteerSignUp = ({ isOpen, onClose }) => {
     const newErrors = {};
     if (!preferredRoles) {
       newErrors.preferredRoles = 'Please select your preferred roles';
-    }
-    if (!volunteerHours || volunteerHours < 0) {
-      newErrors.volunteerHours = 'Please enter valid volunteer hours';
     }
     if (!emergencyContactName) {
       newErrors.emergencyContactName = 'Please enter the emergency contact name';
@@ -31,24 +30,33 @@ const VolunteerSignUp = ({ isOpen, onClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
-      const adopterInfo = {
+      const volunteerInfo = {
         preferredRoles,
-        volunteerHours,
         emergencyContactName,
         emergencyContactNumber,
+        volunteerHours: 0, // Set volunteer hours to 0 in the API call
       };
 
       try {
-        const response = await setVolunteerInformation(adopterInfo);
+        const response = await setVolunteerInformation(volunteerInfo);
         if (response) {
-          alert('Information submitted successfully!'); // Adjust as needed
-          onClose(); // Close the popup after submission
+          setToastMessage('Information submitted successfully!');
+          setShowToast(true);
+
+          // Delay closing the modal to let the toast show for a short time
+          setTimeout(() => {
+            setShowToast(false);
+            onClose(); // Close the popup after showing the toast
+            onSignUpSuccess(); // Trigger validation check on success
+          }, 3000);
         } else {
-          alert('Failed to submit information. Please try again.');
+          setToastMessage('Failed to submit information. Please try again.');
+          setShowToast(true);
         }
       } catch (error) {
         console.error('Error in handleSubmit:', error);
-        alert('An error occurred. Please try again later.');
+        setToastMessage('An error occurred. Please try again later.');
+        setShowToast(true);
       }
     }
   };
@@ -89,24 +97,6 @@ const VolunteerSignUp = ({ isOpen, onClose }) => {
               <option value="Photograph our animals">Photograph our animals</option>
             </select>
             {errors.preferredRoles && <p className="text-red-500 text-sm mt-1">{errors.preferredRoles}</p>}
-          </div>
-
-          {/* Volunteer Hours Input */}
-          <div className="mb-4">
-            <label htmlFor="volunteerHours" className="block text-pr font-semibold mb-2">
-              Volunteer Hours
-              <span className="ml-2 text-st" title="Enter the number of volunteer hours you can commit.">?</span>
-            </label>
-            <input
-              type="number"
-              id="volunteerHours"
-              value={volunteerHours}
-              required
-              onChange={(e) => setVolunteerHours(e.target.value)}
-              className={`w-full p-3 border ${errors.volunteerHours ? 'border-red-500' : 'border-st'} rounded-lg focus:outline-none focus:ring-2 text-black focus:ring-sc`}
-              placeholder="Please enter the number of volunteer hours"
-            />
-            {errors.volunteerHours && <p className="text-red-500 text-sm mt-1">{errors.volunteerHours}</p>}
           </div>
 
           {/* Emergency Contact Name Input */}
@@ -154,6 +144,12 @@ const VolunteerSignUp = ({ isOpen, onClose }) => {
           </button>
         </form>
       </div>
+      {showToast && (
+        <Toast
+          message={toastMessage}
+          onClose={() => setShowToast(false)} // Close the toast after 3 seconds
+        />
+      )}
     </div>
   );
 };

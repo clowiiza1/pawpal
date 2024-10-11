@@ -142,6 +142,15 @@ export const getUserById = async (userId) => {
       return null; // Return null on error
   }
 };
+export const getUserByUsername = async (username) => {
+    try {
+      const response = await api.get(`/users/username/${username}`);
+      return response.data; // Assuming your API returns the user data in response.data
+    } catch (error) {
+      console.error(`Error fetching user with username ${username}:`, error);
+      return null; // Return null on error
+    }
+  };
 
 export const getCategories = async () => {
   try {
@@ -213,15 +222,19 @@ export const setVolunteerInformation = async (adopterInfo) => {
 
 
 // Add booking (if needed)
-export const addBooking = async (booking) => {
-  try {
-      const response = await api.post('/bookings', booking);
-      return response.data; // Assuming the added booking is returned in response.data
-  } catch (error) {
-      console.error('Error adding booking:', error);
-      return null; // Return null on error
-  }
-};
+export const addBooking = async (bookingDate, animalId) => {
+    try {
+      const response = await api.post('/booking/adopter', {
+        bookingDate,  // The selected booking date
+        animalId,     // The ID of the selected animal
+      });
+      return response.data;  // Assuming the added booking is returned in response.data
+    } catch (error) {
+      console.error('Error adding adopter booking:', error);
+      return null;  // Return null on error
+    }
+  };
+  
 
 // Update booking (if needed)
 export const updateBooking = async (booking) => {
@@ -257,13 +270,17 @@ export const getVolunteerValid = async () => {
 
 export const bookVolunteer = async (date) => {
     try {
-        const response = await api.get('/booking/volunteer');
-        return response.data;
+      const response = await api.post('/booking/volunteer', date, {
+        headers: {
+          'Content-Type': 'text/plain', // Send date as plain text, not JSON
+        },
+      });
+      return response.data; // Return the booking data or success message
     } catch (error) {
-        console.error('Error getting valid check', error);
-        return [];
+      console.error('Error booking volunteer date:', error);
+      return null; // Handle the error
     }
-};
+  };
 
   
 
@@ -336,4 +353,72 @@ export const updateBookingStatus = async (bookingId, status) => {
       return null;
     }
   };
+
+  export const deleteUser = async (userId) => {
+    try {
+      const response = await api.delete(`/users/${userId}`);
+      return response.data; // Assuming the API returns a success message
+    } catch (error) {
+      console.error(`Error deleting user with ID ${userId}:`, error);
+      return null; // Return null on error
+    }
+  };
+
+  export const updateUser = async (user) => {
+    try {
+      const response = await api.put('/users', user);
+      return response.data; // Assuming the updated user is returned in response.data
+    } catch (error) {
+      console.error('Error updating user:', error);
+      return null; // Return null on error
+    }
+  };
   
+  export const getBookingsByUserId = async () => {
+    try {
+      const response = await api.get(`/bookings/user`); // No need for userId parameter
+      return response.data; // Assuming your API returns the bookings in response.data
+    } catch (error) {
+      console.error('Error fetching bookings for the current user:', error);
+      return []; // Return an empty array on error
+    }
+  };
+
+  export const getAdopterSuitabilityByUsername = async (username) => {
+    try {
+      const response = await api.get(`/adopter-suitability/user/${username}`);
+      return response.data; // Assuming the API returns the adopter suitability data in response.data
+    } catch (error) {
+      console.error(`Error fetching adopter suitability for user ${username}:`, error);
+      return null; // Return null on error
+    }
+  };
+  
+  export const updateAdopterSuitability = async (adopterSuitability) => {
+  try {
+    const response = await api.put('/adopter-suitability', adopterSuitability);
+    return response.data; // Assuming the updated suitability is returned in response.data
+  } catch (error) {
+    console.error('Error updating adopter suitability:', error);
+    throw error;
+  }
+};
+export const getVolunteerInfoByUserId = async () => {
+    try {
+      const response = await api.get('/volunteer-info/user/');
+      return response.data; // Assuming your API returns the volunteer info in response.data
+    } catch (error) {
+      console.error('Error fetching volunteer information by user ID:', error);
+      return null; // Return null on error
+    }
+  };
+
+  export const updateVolunteerInfo = async (volunteerInfo) => {
+    try {
+      const response = await api.put('/volunteer-info',volunteerInfo);
+      return response.data; // Assuming the updated suitability is returned in response.data
+    } catch (error) {
+      console.error('Error updating volunteer info:', error);
+      throw error;
+    }
+  };

@@ -1,45 +1,45 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { getAnimalById } from '../apis/api'; // Import the API function
+import { getAnimalById, addBooking } from '../apis/api'; // Import the API function
 import catCare from './catcare.jpg';
 import dogCare from './dogcare.jpg';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSyringe, faNeuter } from '@fortawesome/free-solid-svg-icons';
-import dogIcon from './loginformicon.png';
 import Calendar from 'react-calendar'; // Import the Calendar component
 import 'react-calendar/dist/Calendar.css'; // Import the calendar styles
 import './CalendarStyles.css'; // Import custom CSS for calendar styling
+import Toast from '../components/Toast'; // Assuming you have a Toast component
 
 function AdoptBooking() {
   const navigate = useNavigate();
   const location = useLocation();
   const { animalId } = location.state || {}; // Get the animalId from location state
-  const [selectedAnimal, setSelectedAnimal] = useState(null); // Changed initial value to null
+  const [selectedAnimal, setSelectedAnimal] = useState(null); // Set initial value to null
   const [selectedDate, setSelectedDate] = useState(new Date()); // Set initial date to today
   const [selectedSlot, setSelectedSlot] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [toastMessage, setToastMessage] = useState(''); // State for toast message
 
-  // Define the handleDateChange function
+  // Function to handle date change
   const handleDateChange = (date) => {
     setSelectedDate(date);
     setError('');
   };
 
-  // Define the handleSlotChange function
+  // Function to handle slot change
   const handleSlotChange = (event) => {
     setSelectedSlot(event.target.value);
     setError('');
   };
 
+  // Fetch animal data
   useEffect(() => {
     if (!animalId) {
-      // If no animalId is passed, stop execution and show a message or do nothing
-      setLoading(false); // Set loading to false to indicate no further action needed
+      setLoading(false);
       return;
     }
 
-    // Fetch the animal data using the animalId
     const fetchAnimalData = async () => {
       try {
         const animal = await getAnimalById(animalId); // Fetch animal data by ID
@@ -48,24 +48,39 @@ function AdoptBooking() {
         setError('Error fetching animal details.');
         console.error(error);
       } finally {
-        setLoading(false); // Stop loading regardless of success or error
+        setLoading(false); // Stop loading after data is fetched
       }
     };
 
     fetchAnimalData();
   }, [animalId]);
 
-  const handleContinue = () => {
+  // Handle the booking submission
+  const handleBookingSubmit = async () => {
     if (!selectedDate) {
       setError('Please select a date to continue.');
-    } else if (!selectedSlot) {
-      setError('Please select a time slot to continue.');
     } else {
-      navigate('/next-step'); // Continue to the next step of the process
+      // Format date as YYYY-MM-DD
+      const year = selectedDate.getFullYear();
+      const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
+      const day = String(selectedDate.getDate()).padStart(2, '0');
+      const formattedDate = `${year}-${month}-${day}`;
+
+      try {
+        const response = await addBooking(formattedDate, animalId); // Send booking data to the backend
+        if (response) {
+          setToastMessage('Booking successful!'); // Set success toast message
+        } else {
+          setToastMessage('Failed to book. Please try again.'); // Set error toast message
+        }
+      } catch (error) {
+        setError('Error booking adopter slot. Please try again.');
+        console.error(error);
+      }
     }
   };
 
-  if (loading) return <div>Loading...</div>; // Show loading indicator if data is being fetched
+  if (loading) return <div>Loading...</div>; // Show loading indicator while fetching data
 
   return (
     <div className="min-h-screen bg-pr flex flex-col items-center p-4">
@@ -74,9 +89,9 @@ function AdoptBooking() {
       </h2>
 
       {/* Side-by-Side Container for Animal Profile and Date/Time Slot Selection */}
-      <div className="w-full max-w-7xl flex flex-row gap-8 mb-8">
+      <div className="w-full max-w-7xl flex flex-col md:flex-row gap-8 mb-8">
         {/* Animal Mini Profile Section */}
-        <div className="w-1/2 bg-st p-8 rounded-2xl shadow-lg flex flex-col items-center">
+        <div className="md:w-1/2 w-full bg-st p-8 rounded-2xl shadow-lg flex flex-col items-center">
           {selectedAnimal ? (
             <>
               <div className="w-full">
@@ -86,17 +101,14 @@ function AdoptBooking() {
                   className="w-full h-80 object-cover rounded-2xl p-2"
                 />
               </div>
-
               <h3 className="text-3xl font-poppins font-bold text-br p-2 text-center">
                 {selectedAnimal.name}
               </h3>
-
               <p className="font-poppins text-md text-sc mb-4 p-2 text-center">
                 {selectedAnimal.description}
               </p>
 
               <div className="text-left w-full p-4 bg-br rounded-lg shadow-md flex justify-between items-start">
-                {/* Animal Information */}
                 <div className="w-3/4">
                   <p className="font-poppins text-lg text-pr mb-2">
                     <strong>Gender:</strong> {selectedAnimal.gender === 'M' ? 'Male' : selectedAnimal.gender === 'F' ? 'Female' : selectedAnimal.gender}
@@ -111,8 +123,6 @@ function AdoptBooking() {
                     <strong>Weight (kg):</strong> {selectedAnimal.weight}
                   </p>
                 </div>
-
-                {/* Vaccinated and Sterile Icons */}
                 <div className="flex flex-col items-center w-1/4">
                   {selectedAnimal.vaccinated && (
                     <div className="flex flex-col items-center mb-4">
@@ -139,10 +149,8 @@ function AdoptBooking() {
         </div>
 
         {/* Date and Time Slot Selection Section */}
-        <div className="w-1/2 flex flex-col items-center">
-          {/* Date and Time Selection Section */}
+        <div className="md:w-1/2 w-full flex flex-col items-center">
           <div className="w-full bg-br p-6 rounded-lg shadow-lg flex flex-col items-center mb-4">
-            {/* Heading Above Date Picker */}
             <h1 className="text-2xl font-poppins font-bold text-pr mb-4 text-center">
               Please select a date and time slot to go see{' '}
               {selectedAnimal ? selectedAnimal.name : 'an animal'}
@@ -156,11 +164,10 @@ function AdoptBooking() {
                 minDate={new Date()} // Prevent past dates
                 className="custom-calendar bg-pr w-full" // Custom class for styling
               />
-              {/* New "Book {date}" button */}
               <div className="text-center mt-4">
                 <button
                   className="bg-st hover:bg-pr hover:text-sc text-pr font-bold py-3 px-8 rounded-lg shadow-lg"
-                  onClick={() => console.log(`Book ${selectedDate.toDateString()}`)} // Open the confirmation popup on click
+                  onClick={handleBookingSubmit} // Handle booking on click
                 >
                   Book {selectedDate.toDateString()}
                 </button>
@@ -184,48 +191,31 @@ function AdoptBooking() {
               </select>
             </div>
 
-            {/* Error Message */}
             {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
 
-            {/* Continue Button */}
             <button
               className="w-full mt-4 py-3 bg-st text-white text-lg font-poppins rounded-lg hover:bg-br transition-all duration-300"
-              onClick={handleContinue}
+              onClick={handleBookingSubmit}
             >
               Continue
             </button>
           </div>
 
-          {/* Interested Section */}
-          <div className="w-full h-1/2 bg-pr p-2 px-6 rounded-lg flex items-center justify-center relative">
-  {/* Dog Icon Positioned Slightly Below */}
-          <img
-            src={dogIcon}
-            className="w-20 h-20 absolute bottom-20 left-30 rounded-2xl p-1"
-            alt="Dog Icon"
-          />
-          
-          {/* How Does It Work Link */}
-          <a 
-            href="#adoption-process" 
-            className="text-xl text-pr bg-sc border-2 border-sc rounded-full p-2 px-4 font-poppins hover:text-st transition"
-          >
-            How does it work?
-          </a>
-        </div>
-
+          {toastMessage && (
+            <Toast message={toastMessage} onClose={() => setToastMessage('')} />
+          )}
         </div>
       </div>
 
-      {/* Adoption Process Section */}
+      {/* Overall Adoption Process Section */}
       <h2 id="adoption-process" className="text-4xl font-bold text-center mb-8 p-1">
         Overall Adoption Process
       </h2>
 
       {/* Container for images and adoption process side by side */}
-      <div className="w-full max-w-7xl flex flex-row justify-between items-start mb-8">
+      <div className="w-full max-w-7xl flex flex-col md:flex-row justify-between items-start mb-8">
         {/* Rectangular Images Section on the left */}
-        <div className="w-1/2 relative flex flex-col pr-4">
+        <div className="md:w-1/2 w-full relative flex flex-col pr-4">
           <div
             className="w-64 h-64 border-st rounded-2xl overflow-hidden shadow-lg absolute top-0 left-20 transform hover:scale-105 transition-transform duration-400"
             style={{
@@ -253,7 +243,7 @@ function AdoptBooking() {
         </div>
 
         {/* Adoption Process Details Section on the right */}
-        <div className="w-1/2 bg-pr rounded-lg ml-8">
+        <div className="md:w-1/2 w-full bg-pr rounded-lg ml-8">
           <h2 className="text-2xl font-bold text-br mb-4 text-center pb-2">
             Ready to Adopt?{' '}
             <span className="underline decoration-st">Here are a few steps to follow</span>
@@ -263,7 +253,7 @@ function AdoptBooking() {
               <div className="flex items-center justify-center w-10 h-10 rounded-full bg-sc text-white font-bold mr-4 flex-shrink-0">
                 1
               </div>
-              <div className="flex-grow w-90">
+              <div className="flex-grow">
                 <h3 className="text-xl font-semibold text-br">Choose a Date</h3>
                 <p className="text-sc">
                   The SPCA is open from Monday to Saturday. Select any date that suits you and check its availability.
@@ -274,7 +264,7 @@ function AdoptBooking() {
               <div className="flex items-center justify-center w-10 h-10 rounded-full bg-sc text-white font-bold mr-4 flex-shrink-0">
                 2
               </div>
-              <div className="flex-grow w-90">
+              <div className="flex-grow">
                 <h3 className="text-xl font-semibold text-br">Pick a Time Slot</h3>
                 <p className="text-sc">
                   Once you've chosen a date, select one of the following time slots and check its availability: <br />
@@ -290,7 +280,7 @@ function AdoptBooking() {
               <div className="flex items-center justify-center w-10 h-10 rounded-full bg-sc text-white font-bold mr-4 flex-shrink-0">
                 3
               </div>
-              <div className="flex-grow w-90">
+              <div className="flex-grow">
                 <h3 className="text-xl font-semibold text-br">Visit the SPCA</h3>
                 <p className="text-sc">
                   Get ready to meet your potential new best friend! Upon arrival, you'll need to provide a certified copy of your ID or Passport
@@ -302,7 +292,7 @@ function AdoptBooking() {
               <div className="flex items-center justify-center w-10 h-10 rounded-full bg-sc text-white font-bold mr-4 flex-shrink-0">
                 4
               </div>
-              <div className="flex-grow w-90">
+              <div className="flex-grow">
                 <h3 className="text-xl font-semibold text-br">Complete the Adoption</h3>
                 <p className="text-sc">
                   If you decide to adopt, fill out the adoption form and pay the standard fee of R500. A representative will visit your home with the

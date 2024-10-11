@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { FaPen} from 'react-icons/fa';
-import { getUserProfile } from '../apis/api'; // API function to fetch the user info is in api.js "getUserProfile"
+import { FaPen } from 'react-icons/fa';
+import { getUserByUsername, updateUser, getAdopterSuitabilityByUsername, updateAdopterSuitability, getVolunteerInfoByUserId, updateVolunteerInfo } from '../apis/api'; // API functions
 import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import UserBookingsTab from '../components/UsersBookingTab';
+import Toast from '../components/Toast';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -14,65 +16,71 @@ const Profile = () => {
   const [age, setAge] = useState('');
   const [editingField, setEditingField] = useState(null);
   const [isModified, setIsModified] = useState(false);
+  const [userId, setUserId] = useState(null); 
+  const [roles, setRoles] = useState([]); 
+  const [username, setUsername] = useState('');
+  const [showToast, setShowToast] = useState(false); // State to manage toast visibility
+  const [toastMessage, setToastMessage] = useState('');
+  const [activeTab, setActiveTab] = useState('main'); // State for active tab
 
-  // New state for active tab
-  const [activeTab, setActiveTab] = useState('main');
-
-  // New states for password change
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [passwordMessage, setPasswordMessage] = useState('');
-
-  // New state for adopter info
+  // State for adopter info
   const [numberOfAnimals, setNumberOfAnimals] = useState('');
   const [houseType, setHouseType] = useState('');
-  const [adopterSuitability, setAdopterSuitability] = useState('');
 
-  // New state for volunteer info
+  // State for volunteer info
   const [preferredRoles, setPreferredRoles] = useState('');
   const [volunteerHours, setVolunteerHours] = useState('');
   const [emergencyContacts, setEmergencyContacts] = useState([{ name: '', number: '' }]);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    if (token) {
-      const extractUsernameFromToken = (token) => {
-        try {
-          const payload = JSON.parse(atob(token.split('.')[1]));
-          return payload.sub; // Adjust based on your token structure
-        } catch (error) {
-          console.error('Error extracting username from token:', error);
-          return null;
-        }
-      };
+    if (!token) return;
 
-      const fetchUserProfile = async () => {
-        const usernameFromToken = extractUsernameFromToken(token);
-        const userData = await getUserProfile(usernameFromToken); // Fetch user profile
+    const extractUsernameFromToken = (token) => {
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        return payload.sub; // Adjust based on your token structure
+      } catch (error) {
+        console.error('Error extracting username from token:', error);
+        return null;
+      }
+    };
 
+    const fetchProfileAndInfo = async () => {
+      const usernameFromToken = extractUsernameFromToken(token);
+
+      if (usernameFromToken) {
+        // Fetch user profile
+        const userData = await getUserByUsername(usernameFromToken);
         if (userData) {
           setFirstName(userData.firstName || '');
           setLastName(userData.lastName || '');
           setEmail(userData.email || '');
-          setPhoneNumber(userData.phoneNumber || ''); // Assuming phone number is in your user data
-          setAge(userData.age || ''); // Assuming age is in your user data
-          // Set adopter info
-          setNumberOfAnimals(userData.numberOfAnimals || '');
-          setHouseType(userData.houseType || '');
-          setAdopterSuitability(userData.adopterSuitability || '');
-          // Set volunteer info
-          setPreferredRoles(userData.preferredRoles || '');
-          setVolunteerHours(userData.volunteerHours || '');
-          // Initialize emergency contacts
-          setEmergencyContacts(userData.emergencyContacts || [{ name: '', number: '' }]);
+          setPhoneNumber(userData.phoneNumber || '');
+          setAge(userData.age || '');
+          setUsername(userData.username || '');
+          setUserId(userData.id || null);
         }
-      };
 
-      fetchUserProfile();
-    }
+        // Fetch adopter suitability info
+        const adopterData = await getAdopterSuitabilityByUsername(usernameFromToken);
+        if (adopterData) {
+          setNumberOfAnimals(adopterData.noOfAnimals || '');
+          setHouseType(adopterData.houseType || '');
+        }
 
-    // Add event listener for Escape key
+        // Fetch volunteer info
+        const volunteerData = await getVolunteerInfoByUserId();
+        if (volunteerData) {
+          setPreferredRoles(volunteerData.preferredRoles || '');
+          setVolunteerHours(volunteerData.volunteerHours || 0);
+          setEmergencyContacts([{ name: volunteerData.emergencyContactName, number: volunteerData.emergencyContactNumber }]);
+        }
+      }
+    };
+
+    fetchProfileAndInfo();
+
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
         setEditingField(null);
@@ -81,7 +89,7 @@ const Profile = () => {
 
     window.addEventListener('keydown', handleKeyDown);
 
-    // Cleanup event listener on component unmount
+    // Cleanup function to remove event listener on component unmount
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
@@ -89,6 +97,42 @@ const Profile = () => {
 
   const handleEdit = (field) => {
     setEditingField(field);
+  };
+
+  const handleAdopterSave = async () => {
+    const updatedAdopterInfo = {
+      noOfAnimals: numberOfAnimals,
+      houseType: houseType,
+    };
+  
+    try {
+      await updateAdopterSuitability(updatedAdopterInfo); 
+      setToastMessage('Adopter info updated successfully!');
+      setShowToast(true);
+    } catch (error) {
+      console.error('Error updating adopter info:', error);
+      setToastMessage('Error updating adopter info.');
+      setShowToast(true);
+    }
+  };
+
+  const handleVolunteerSave = async () => {
+    const updatedVolunteerInfo = {
+      preferredRoles,
+      emergencyContactName: emergencyContacts[0].name,
+      emergencyContactNumber: emergencyContacts[0].number,
+      volunteerHours: 0, // Set to 0 as per requirement
+    };
+
+    try {
+      await updateVolunteerInfo(updatedVolunteerInfo);
+      setToastMessage('Volunteer info updated successfully!');
+      setShowToast(true);
+    } catch (error) {
+      console.error('Error updating volunteer info:', error);
+      setToastMessage('Error updating volunteer info.');
+      setShowToast(true);
+    }
   };
 
   const handleChange = (e) => {
@@ -115,52 +159,47 @@ const Profile = () => {
     setIsModified(true);
   };
 
-  const handleSave = () => {
-    // Save the updated information to localStorage (or ideally to your API)
-    localStorage.setItem('First_Name', firstName);
-    localStorage.setItem('Last_Name', lastName);
-    localStorage.setItem('Email_Address', email);
-    localStorage.setItem('Phone_Number', phoneNumber);
-    localStorage.setItem('Age', age);
-    setEditingField(null);
-    setIsModified(false);
+  const handleSave = async () => {
+    if (userId) {
+      const updatedUser = {
+        id: userId,
+        firstName,
+        lastName,
+        email,
+        username, 
+        phoneNumber,
+        age,
+        roles,
+      };
+
+      try {
+        await updateUser(updatedUser); 
+        setIsModified(false);
+        setEditingField(null);
+        setToastMessage('User information updated successfully!');
+        setShowToast(true);
+      } catch (error) {
+        console.error('Error updating user:', error);
+        setToastMessage('Error updating user information.');
+        setShowToast(true); 
+      }
+    }
   };
 
-  // Function to handle password change
-  const handlePasswordChange = () => {
-    if (!currentPassword || !newPassword || !confirmPassword) {
-      setPasswordMessage('All fields are required.');
-      return; // Exit the function if any field is empty
-    }
+  const roleNames = roles.map(role => role.name).join(', ');
 
-    if (newPassword === confirmPassword) {
-      setPasswordMessage('Password changed successfully!');
-      // Here you would typically send the new password to your API to update it
-    } else {
-      setPasswordMessage('Passwords do not match.');
-    }
-
-    // Reset password fields after handling
-    setCurrentPassword('');
-    setNewPassword('');
-    setConfirmPassword('');
-  };
-
-  // code for the donut chart
   const chartData = {
-    labels: ['Volunteer Hours', 'Remaining Hours'],
-    datasets: [
-      {
-        data: [volunteerHours, 24 - volunteerHours],
-        backgroundColor: ['#ffffff', '#000000'],
-        hoverBackgroundColor: ['#ffffff', '#000000'],
-      },
-    ],
+    labels: ['Hours Spent', 'Remaining Hours'],
+    datasets: [{
+      data: [volunteerHours, 24 - volunteerHours],
+      backgroundColor: ['#FF6384', '#36A2EB'],
+      hoverBackgroundColor: ['#FF6384', '#36A2EB'],
+    }],
   };
-  
+
   return (
-    <div className="flex h-screen">
-      <aside className="w-1/4 bg-st p-8 flex flex-col rounded-tl-3xl rounded-tr-3xl ml-4">
+    <div className="flex h-screen p-4">
+      <aside className="w-1/4 bg-st p-8 flex flex-col rounded-tl-3xl rounded-3xl ml-4">
         <ul className="space-y-6">
           <li>
             <button
@@ -184,6 +223,14 @@ const Profile = () => {
               onClick={() => setActiveTab('volunteer')}
             >
               Volunteer Info
+            </button>
+          </li>
+          <li>
+            <button
+              className={`w-full ${activeTab === 'bookings' ? 'bg-sc text-pr' : 'bg-pr text-sc'} py-4 text-lg font-bold rounded-lg shadow-md`}
+              onClick={() => setActiveTab('bookings')}
+            >
+              My Bookings
             </button>
           </li>
         </ul>
@@ -242,40 +289,6 @@ const Profile = () => {
                 <button onClick={handleSave} className="bg-sc text-pr py-2 px-4 rounded-lg shadow-md">Save Changes</button>
               </div>
             )}
-
-            {/* Password Change Section */}
-            <div className="mt-8 ml-12">
-              <h3 className="text-xl font-semibold text-sc mb-2">Change Password</h3>
-              
-              <div className="flex flex-col mb-2 w-1/3"> {/* Flex container for vertical stacking */}
-                <input
-                  type="password"
-                  placeholder="Current Password"
-                  value={currentPassword}
-                  onChange={(e) => setCurrentPassword(e.target.value)}
-                  className="border rounded px-2 py-1 mb-2" // Keep the width at 1/3
-                />
-                <input
-                  type="password"
-                  placeholder="New Password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  className="border rounded px-2 py-1 mb-2" // Keep the width at 1/3
-                />
-                <input
-                  type="password"
-                  placeholder="Confirm Password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="border rounded px-2 py-1 mb-2" // Keep the width at 1/3
-                />
-              </div>
-
-              <button onClick={handlePasswordChange} className="bg-sc text-pr py-2 px-4 rounded-lg shadow-md">Change Password</button>
-              
-              {passwordMessage && <p className="text-red-500 mt-2">{passwordMessage}</p>}
-            </div>
-
           </>
         )}
 
@@ -300,22 +313,24 @@ const Profile = () => {
                   className="border rounded px-2 py-1 w-1/4"
                 >
                   <option value="">Select</option>
+                  <option value="Farm">Farm</option>
                   <option value="Apartment">Apartment</option>
-                  <option value="House">House</option>
-                  <option value="Condo">Condo</option>
+                  <option value="Residential">Residential</option>
+                  <option value="Townhouse">Townhouse</option>
                 </select>
               </div>
-              <div>
-                <label className="font-medium">Adopter Suitability:</label>
-                <input
-                  type="text"
-                  value={adopterSuitability}
-                  onChange={(e) => setAdopterSuitability(e.target.value)}
-                  className="border rounded px-2 py-1 w-1/4"
-                />
+              <div className="mt-4">
+                <button onClick={handleAdopterSave} className="bg-sc text-pr py-2 px-4 rounded-lg shadow-md">Save Adopter Info</button>
               </div>
             </div>
           </div>
+        )}
+
+        {showToast && (
+          <Toast
+            message={toastMessage}
+            onClose={() => setShowToast(false)}
+          />
         )}
 
         {activeTab === 'volunteer' && (
@@ -324,68 +339,57 @@ const Profile = () => {
             <div className="space-y-4 ml-12">
               <div className="flex items-center">
                 <span className="text-lg font-medium w-1/3">Preferred Roles:</span>
-                <input
-                  type="text"
+                <select
                   value={preferredRoles}
                   onChange={(e) => setPreferredRoles(e.target.value)}
                   className="border rounded px-2 py-1 text-lg w-1/3"
-                />
+                >
+                  <option value="">Preferred Role</option>
+                  <option value="Provide general care">Provide general care</option>
+                  <option value="Take our dogs for walks">Take our dogs for walks</option>
+                  <option value="Write creative bios">Write creative bios</option>
+                  <option value="Photograph our animals">Photograph our animals</option>
+                </select>
               </div>
 
-              {/* Emergency Contact Name */}
               <div className="flex items-center">
                 <span className="text-lg font-medium w-1/3">Emergency Contact Name:</span>
                 <input
                   type="text"
-                  value={emergencyContacts[0].name} // Use your state for emergency contact name
+                  value={emergencyContacts[0].name} 
                   onChange={(e) => setEmergencyContacts([{ ...emergencyContacts[0], name: e.target.value }])}
                   className="border rounded px-2 py-1 text-lg w-1/3"
                 />
               </div>
 
-              {/* Emergency Contact Number */}
               <div className="flex items-center">
                 <span className="text-lg font-medium w-1/3">Emergency Contact Number:</span>
                 <input
                   type="text"
-                  value={emergencyContacts[0].number} // Use your state for emergency contact number
+                  value={emergencyContacts[0].number} 
                   onChange={(e) => setEmergencyContacts([{ ...emergencyContacts[0], number: e.target.value }])}
                   className="border rounded px-2 py-1 text-lg w-1/3"
                 />
               </div>
 
-              <div className="flex items-center">
-                <span className="text-lg font-medium w-1/3">Volunteer Hours:</span>
-                <input
-                  type="number"
-                  value={volunteerHours}
-                  onChange={(e) => setVolunteerHours(e.target.value)}
-                  className="border rounded px-2 py-1 text-lg w-1/3"
-                />
-              </div>
-
-              {/* Add the Doughnut Chart here */}
+              {/* Doughnut Chart */}
               <div className="flex items-center ml-14">
                 <div style={{ width: '200px', height: '200px' }}>
                   <Doughnut
-                    data={{
-                      labels: ['Hours Spent', 'Remaining Hours'],
-                      datasets: [{
-                        data: [volunteerHours, 24 - volunteerHours],
-                        backgroundColor: ['#FF6384', '#36A2EB'],
-                        hoverBackgroundColor: ['#FF6384', '#36A2EB'],
-                      }],
-                    }}
+                    data={chartData}
                   />
                 </div>
                 <span className="ml-4 text-lg font-medium">{volunteerHours} hours spent volunteering</span>
+              </div>
+
+              <div className="mt-4">
+                <button onClick={handleVolunteerSave} className="bg-sc text-pr py-2 px-4 rounded-lg shadow-md">Update Volunteer Info</button>
               </div>
             </div>
           </>
         )}
 
-
-
+        {activeTab === 'bookings' && <UserBookingsTab />}
       </main>
     </div>
   );
