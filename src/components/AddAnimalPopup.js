@@ -17,9 +17,9 @@ const AddAnimalPopup = ({ isOpen, onClose, setAnimals }) => {
 
   // AWS S3 Configuration with hardcoded credentials
   const s3 = new AWS.S3({
-    accessKeyId: 'AKIA4VDBMHVCKJB3FIHM',
-    secretAccessKey: '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',
-    region: 'eu-central-1',
+    accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY,
+    region: process.env.REACT_APP_AWS_REGION,
   });
 
   const handleImageUpload = (e) => {
