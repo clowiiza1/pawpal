@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-// Base URL for your backend API
+
 const API_URL = 'http://localhost:8080/api/';
 
 // Create an Axios instance
@@ -30,7 +30,7 @@ api.interceptors.request.use(
 export const getAnimals = async () => {
     try {
         const response = await api.get('/animals');
-        return response.data; // Assuming your API returns the animal list in response.data
+        return response.data; 
     } catch (error) {
         console.error('Error fetching animals:', error);
         return [];
@@ -41,7 +41,7 @@ export const getAnimals = async () => {
 export const getAnimalById = async (id) => {
     try {
         const response = await api.get(`/animals/${id}`);
-        return response.data; // Assuming your API returns the animal data in response.data
+        return response.data; 
     } catch (error) {
         console.error(`Error fetching animal with ID ${id}:`, error);
         return null; // Return null on error
@@ -51,18 +51,17 @@ export const getAnimalById = async (id) => {
 export const getCategoriesBySpecies = async (species) => {
   try {
       const response = await api.get(`/categories/species/${species}`);
-      return response.data; // Assuming your API returns the list of CategoryDto objects in response.data
+      return response.data; 
   } catch (error) {
       console.error(`Error fetching categories for species ${species}:`, error);
       return []; // Return an empty array on error
   }
 };
-// Other API functions...
 
 export const getUserProfile = async (username) => {
     try {
         const response = await api.get(`/users/${username}`); // Adjust endpoint as needed
-        return response.data; // Assuming your API returns user data in response.data
+        return response.data; 
     } catch (error) {
         console.error('Error fetching user profile:', error);
         return null; // Return null on error
@@ -85,7 +84,7 @@ export const register = async (userData) => {
     return await api.post('/auth/register', userData);
 };
 
-// Example of a protected API call that requires authentication
+
 export const getProtectedData = async () => {
     return await api.get('/protected-data');
 };
@@ -103,7 +102,7 @@ export const checkIfAdopterSuitabilityExists = async (username) => {
 export const filterAnimals = async (filterData) => {
     try {
         const response = await api.post('/animals/filter', filterData);
-        return response.data; // Assuming the filtered animals are returned in response.data
+        return response.data; 
     } catch (error) {
         console.error('Error filtering animals:', error);
         return [];
@@ -122,8 +121,8 @@ export const setAdopterInfo = async (adopterInfo) => {
 
 export const getBookings = async () => {
   try {
-      const response = await api.get('/bookings'); // Make sure this endpoint returns the status field
-      return response.data; // Assuming your API returns the booking list including status in response.data
+      const response = await api.get('/bookings'); 
+      return response.data; 
   } catch (error) {
       console.error('Error fetching bookings:', error);
       return []; // Return an empty array on error
@@ -136,7 +135,7 @@ export const getBookings = async () => {
 export const getUserById = async (userId) => {
   try {
       const response = await api.get(`/users/${userId}`);
-      return response.data; // Assuming your API returns the user data in response.data
+      return response.data; 
   } catch (error) {
       console.error(`Error fetching user with ID ${userId}:`, error);
       return null; // Return null on error
@@ -145,7 +144,7 @@ export const getUserById = async (userId) => {
 export const getUserByUsername = async (username) => {
     try {
       const response = await api.get(`/users/username/${username}`);
-      return response.data; // Assuming your API returns the user data in response.data
+      return response.data; 
     } catch (error) {
       console.error(`Error fetching user with username ${username}:`, error);
       return null; // Return null on error
@@ -155,7 +154,7 @@ export const getUserByUsername = async (username) => {
 export const getCategories = async () => {
   try {
       const response = await api.get('/categories');
-      return response.data; // Assuming your API returns the category list in response.data
+      return response.data; 
   } catch (error) {
       console.error('Error fetching categories:', error);
       return []; // Return an empty array on error
@@ -165,7 +164,7 @@ export const getCategories = async () => {
 export const getCategoriesByAnimalId = async (animalId) => {
     try {
         const response = await api.get(`/animals/categories/${animalId}`);
-        return response.data; // Assuming your API returns the category list in response.data
+        return response.data;
     } catch (error) {
         console.error('Error fetching categories:', error);
         return []; // Return an empty array on error
@@ -175,7 +174,7 @@ export const getCategoriesByAnimalId = async (animalId) => {
 export const deleteCategory = async (categoryId) => {
   try {
       const response = await api.delete(`/categories/${categoryId}`);
-      return response.data; // Assuming the API returns a success message or deleted ID in response.data
+      return response.data; 
   } catch (error) {
       console.error(`Error deleting category with ID ${categoryId}:`, error);
       return null; // Return null on error
@@ -188,7 +187,7 @@ export const updateCategory = async (category) => {
           category.animalType = category.animalType.join(',');
       }
       const response = await api.put('/categories', category);
-      return response.data; // Assuming the updated category is returned in response.data
+      return response.data; 
   } catch (error) {
       console.error('Error updating category:', error);
       return null; // Return null on error
@@ -202,7 +201,7 @@ export const addCategory = async (category) => {
           category.animalType = category.animalType.join(',');
       }
       const response = await api.post('/categories', category);
-      return response.data; // Assuming the added category is returned in response.data
+      return response.data; 
   } catch (error) {
       console.error('Error adding category:', error);
       return null; // Return null on error
@@ -221,14 +220,14 @@ export const setVolunteerInformation = async (adopterInfo) => {
 
 
 
-// Add booking (if needed)
+
 export const addBooking = async (bookingDate, animalId) => {
     try {
       const response = await api.post('/booking/adopter', {
         bookingDate,  // The selected booking date
         animalId,     // The ID of the selected animal
       });
-      return response.data;  // Assuming the added booking is returned in response.data
+      return response.data;  
     } catch (error) {
       console.error('Error adding adopter booking:', error);
       return null;  // Return null on error
@@ -236,11 +235,11 @@ export const addBooking = async (bookingDate, animalId) => {
   };
   
 
-// Update booking (if needed)
+
 export const updateBooking = async (booking) => {
   try {
       const response = await api.put(`/bookings/${booking.id}`, booking);
-      return response.data; // Assuming the updated booking is returned in response.data
+      return response.data; 
   } catch (error) {
       console.error('Error updating booking:', error);
       return null; // Return null on error
@@ -251,7 +250,7 @@ export const updateBooking = async (booking) => {
 export const deleteBooking = async (bookingId) => {
   try {
       const response = await api.delete(`/bookings/${bookingId}`);
-      return response.data; // Assuming the API returns a success message or deleted ID in response.data
+      return response.data; 
   } catch (error) {
       console.error(`Error deleting booking with ID ${bookingId}:`, error);
       return null; // Return null on error
@@ -272,7 +271,7 @@ export const bookVolunteer = async (date) => {
     try {
       const response = await api.post('/booking/volunteer', date, {
         headers: {
-          'Content-Type': 'text/plain', // Send date as plain text, not JSON
+          'Content-Type': 'text/plain', 
         },
       });
       return response.data; // Return the booking data or success message
@@ -288,7 +287,7 @@ export const bookVolunteer = async (date) => {
 export const getUserRoles = async () => {
   try {
       const response = await api.get('/users/role');
-      return response.data; // Assuming your API returns the list of roles in response.data
+      return response.data; 
   } catch (error) {
       console.error('Error fetching user roles:', error);
       return []; // Return an empty array on error
@@ -298,7 +297,7 @@ export const getUserRoles = async () => {
 export const getAllUsers = async () => {
   try {
       const response = await api.get('/users');
-      return response.data; // Assuming the API returns the user data in response.data
+      return response.data; 
   } catch (error) {
       console.error('Error fetching users:', error);
       return []; // Return an empty array on error
@@ -328,7 +327,7 @@ export const updateAnimalCategories = async (animalId, categoryIds) => {
   export const deleteAnimal = async (animalId) => {
     try {
       const response = await api.delete(`/animals/${animalId}`);
-      return response.data; // Assuming the API returns a success message or deleted ID in response.data
+      return response.data; 
     } catch (error) {
       console.error(`Error deleting animal with ID ${animalId}:`, error);
       throw error;
@@ -357,7 +356,7 @@ export const updateBookingStatus = async (bookingId, status) => {
   export const deleteUser = async (userId) => {
     try {
       const response = await api.delete(`/users/${userId}`);
-      return response.data; // Assuming the API returns a success message
+      return response.data; 
     } catch (error) {
       console.error(`Error deleting user with ID ${userId}:`, error);
       return null; // Return null on error
@@ -367,7 +366,7 @@ export const updateBookingStatus = async (bookingId, status) => {
   export const updateUser = async (user) => {
     try {
       const response = await api.put('/users', user);
-      return response.data; // Assuming the updated user is returned in response.data
+      return response.data;
     } catch (error) {
       console.error('Error updating user:', error);
       return null; // Return null on error
@@ -377,7 +376,7 @@ export const updateBookingStatus = async (bookingId, status) => {
   export const getBookingsByUserId = async () => {
     try {
       const response = await api.get(`/bookings/user`); // No need for userId parameter
-      return response.data; // Assuming your API returns the bookings in response.data
+      return response.data;// Assuming your API returns the bookings in response.data
     } catch (error) {
       console.error('Error fetching bookings for the current user:', error);
       return []; // Return an empty array on error
@@ -387,7 +386,7 @@ export const updateBookingStatus = async (bookingId, status) => {
   export const getAdopterSuitabilityByUsername = async (username) => {
     try {
       const response = await api.get(`/adopter-suitability/user/${username}`);
-      return response.data; // Assuming the API returns the adopter suitability data in response.data
+      return response.data; 
     } catch (error) {
       console.error(`Error fetching adopter suitability for user ${username}:`, error);
       return null; // Return null on error
@@ -397,7 +396,7 @@ export const updateBookingStatus = async (bookingId, status) => {
   export const updateAdopterSuitability = async (adopterSuitability) => {
   try {
     const response = await api.put('/adopter-suitability', adopterSuitability);
-    return response.data; // Assuming the updated suitability is returned in response.data
+    return response.data; 
   } catch (error) {
     console.error('Error updating adopter suitability:', error);
     throw error;
@@ -406,7 +405,7 @@ export const updateBookingStatus = async (bookingId, status) => {
 export const getVolunteerInfoByUserId = async () => {
     try {
       const response = await api.get('/volunteer-info/user/');
-      return response.data; // Assuming your API returns the volunteer info in response.data
+      return response.data; 
     } catch (error) {
       console.error('Error fetching volunteer information by user ID:', error);
       return null; // Return null on error
@@ -416,7 +415,7 @@ export const getVolunteerInfoByUserId = async () => {
   export const updateVolunteerInfo = async (volunteerInfo) => {
     try {
       const response = await api.put('/volunteer-info',volunteerInfo);
-      return response.data; // Assuming the updated suitability is returned in response.data
+      return response.data; 
     } catch (error) {
       console.error('Error updating volunteer info:', error);
       throw error;
